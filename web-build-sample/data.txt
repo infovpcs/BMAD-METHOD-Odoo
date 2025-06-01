@@ -446,5 +446,526 @@ list out your technical preferences, patterns you like to follow, language frame
 Anything you learn or prefer over time to drive future project choices, add the here.
 
 ==================== END: technical-preferences ====================
+==================== START: odoo-best-practices ====================
+# Odoo Development Best Practices
 
+## 1. ORM Usage
+- **Batch Operations:** Always use ORM methods (`create`, `write`, `unlink`, `search`, `browse`) on recordsets (multiple records) for performance, instead of iterating and calling them one by one.
+- **Context:** Understand and utilize the `context` dictionary for specific behaviors (e.g., `with_context`, `sudo`).
+- **`ensure_one()`:** Use `self.ensure_one()` when a method should only operate on a single record.
+- **Computed Fields:**
+    - Use `store=True` judiciously; it's useful for performance on frequently searched/grouped fields but adds write overhead.
+    - Ensure `depends` decorator lists all relevant fields for computation.
+- **Avoid Raw SQL:** Prefer Odoo's ORM methods unless absolutely necessary for complex queries not efficiently handled by ORM. If using raw SQL, use `self.env.cr.execute()` and parameterize your queries to prevent SQL injection.
 
+## 2. Security
+- **Access Rights (`ir.model.access.csv`):** Define read, write, create, unlink permissions for all custom models and relevant groups.
+- **Record Rules (`ir.rule`):** Implement row-level security for multi-company, multi-user, or data segregation needs.
+- **Groups:** Assign access rights to specific user groups, not individual users.
+- **`sudo()` / `sudo(False)`:** Use `sudo()` sparingly and explicitly. `sudo()` elevates privileges; `sudo(False)` drops them back to the current user's. Be mindful of security implications.
+
+## 3. Views
+- **XML IDs:** Use consistent and descriptive XML IDs (e.g., `module_name.view_model_form`).
+- **Inheritance:**
+    - **`inherit_id`:** Use for extending existing Odoo views.
+    - **`xpath`:** Use `xpath` with `position="after"`, `before`, `replace`, `attributes`, `inside` to precisely modify views.
+    - **`priority`:** If multiple modules inherit the same view, `priority` can determine which inheritance applies last.
+- **`tree` and `form` views:** Always provide these for any custom model.
+- **`search` view:** Always provide a search view for ease of filtering.
+- **`chatter`:** Include `mail_thread` and `mail_followers` widgets for communication features.
+
+## 4. Performance
+- **`_rec_name`:** Set `_rec_name` on models if the display field is not `name`.
+- **Indexing:** Use `index=True` on fields that are frequently searched or used in `group by` clauses.
+- **Lazy Loading:** Odoo's ORM loads records lazily. Be aware of this and avoid fetching unnecessary data.
+- **Scheduled Actions (Cron):** For long-running or batch processes, use `ir.cron` instead of synchronous operations.
+- **Computed Field `store=False` vs `store=True`:** `store=False` computes on the fly (can be slow if many records/complex computation); `store=True` stores in DB (faster read, slower write). Choose based on access patterns.
+
+## 5. Code Quality
+- **PEP8:** Follow Python's PEP8 style guide.
+- **Odoo Coding Guidelines:** Adhere to Odoo's specific coding conventions.
+- **`_logger`:** Use `logging.getLogger(__name__)` for proper logging within your module.
+- **Docstrings:** Write clear docstrings for models, methods, and classes.
+- **Translatable Strings:** Wrap all user-facing strings with `_()` for internationalization.
+
+## 6. Testing
+- **Unit Tests:** Write tests for your custom models and methods to ensure correctness and prevent regressions.
+- **`odoo.tests.common.TransactionCase`:** Most common test class, rolls back changes after each test.
+- **Test Tags:** Use `@tagged()` decorator for better test organization and selective execution.
+
+## 7. Configuration & Deployment
+- **`__manifest__.py`:** Keep it accurate and up-to-date with dependencies, data files, and module information.
+- **Credentials:** Never hardcode sensitive credentials (API keys, passwords). Use `ir.config_parameter` or environment variables.
+- **Auto-install:** Set `auto_install = False` for most custom modules to prevent accidental installation.
+
+## 8. General
+- **Inherit vs. Override:** Understand when to inherit models (`_inherit`, `_name`) vs. overriding methods (using `super()`).
+- **Dependencies:** Declare all module dependencies in `__manifest__.py`.
+- **Clear Commit Messages:** Write descriptive commit messages for version control.
+==================== END: odoo-best-practices ====================
+
+==================== START: odoo-orm-examples ====================
+# Odoo ORM Examples
+
+## 1. Creating Records
+```python
+# Create a single record
+product_template = self.env['product.template'].create({
+    'name': 'My New Product',
+    'type': 'product',
+    'list_price': 100.0,
+})
+# Create multiple records (list of dictionaries)
+products = self.env['product.template'].create([
+    {'name': 'Product A', 'list_price': 50.0},
+    {'name': 'Product B', 'list_price': 75.0},
+])
+## 2. Searching Records
+```python
+# Search all active partners
+active_partners = self.env['res.partner'].search([('active', '=', True)])
+# Search partners with specific name and city
+specific_partners = self.env['res.partner'].search([
+    ('name', 'ilike', 'Odoo'),
+    ('city', '=', 'Brussels')
+])
+# Search with complex domain (AND is implicit, OR needs '|', NOT needs '!')
+complex_search = self.env['sale.order'].search([
+    '|', # OR condition for the next two domains
+        ('state', '=', 'draft'),
+        ('state', '=', 'sent'),
+    ('amount_total', '>', 500),
+    '!', ('partner_id.country_id.code', '=', 'US') # NOT a US partner
+])
+# Limit and order results
+ten_products = self.env['product.product'].search([], limit=10, order='name desc')
+## 3. Browse Records (Accessing Fields)
+```python
+# Accessing a field value
+product_name = product_template.name # 'My New Product'
+# Accessing a Many2one field's recordset
+partner_country = specific_partners.partner_id.country_id.name
+# Iterating over a recordset
+for product in products:
+    print(f"Product: {product.name}, Price: {product.list_price}")
+## 4. Updating Records
+```python
+# Update a single record
+product_template.write({'list_price': 120.0})
+# Update multiple records in a recordset
+products_to_update = self.env['product.template'].search([('list_price', '<', 100)])
+products_to_update.write({'active': False}) # Deactivate all products under 100
+## 5. Deleting Records
+```python
+# Delete a single record
+product_template.unlink()
+# Delete multiple records
+products_to_delete = self.env['product.template'].search([('name', 'like', 'Temp Product')])
+products_to_delete.unlink()
+## 6. Accessing Environment and Current User
+```python
+# Current user
+current_user = self.env.user
+# Current company
+current_company = self.env.company
+# Accessing another model's recordset
+res_partner_model = self.env['res.partner']
+# Switching user context
+admin_partner = self.env['res.partner'].sudo().search([('name', '=', 'Administrator')], limit=1)
+if admin_partner:
+    # Perform an action as another user (e.g., admin)
+    admin_partner.with_user(self.env.ref('base.user_admin')).write({'comment': 'Updated by specific user'})
+# Switching company context
+with self.env(company=self.env.ref('base.main_company')): # Assuming 'base.main_company' is an existing company
+    main_company_users = self.env['res.users'].search([])
+## 7. Calling Methods
+```python
+# Calling a method on a recordset
+sale_order = self.env['sale.order'].browse(123)
+sale_order.action_confirm()
+# Calling a method with arguments
+product_data = self.env['product.template'].browse(456)
+product_data.do_some_calculation(value1=10, value2=20)
+## 8. Relational Fields
+```python
+# Many2one: Accessing the related recordset
+sale_order = self.env['sale.order'].browse(sale_order_id)
+partner = sale_order.partner_id
+partner_name = partner.name
+
+# One2many: Accessing the related recordset (list of records)
+sale_order_lines = sale_order.order_line
+for line in sale_order_lines:
+    print(f"Product: {line.product_id.name}, Quantity: {line.product_uom_qty}")
+
+# Many2many: Accessing the related recordset
+user_groups = self.env.user.groups_id
+for group in user_groups:
+    print(f"User belongs to group: {group.name}")
+
+# Adding/Removing records from Many2many or One2many (special commands)
+# (0, 0, {values})    link to a new record that will be created
+# (1, ID, {values})   update an existing record
+# (2, ID, False)      remove and delete
+# (3, ID, False)      unlink (delete association but not the record)
+# (4, ID, False)      link to existing
+# (5, False, False)   unlink all
+# (6, False, [IDs])   replace all with a new list
+## 9. Exceptions and Logging
+```python
+from odoo.exceptions import ValidationError, UserError
+import logging
+_logger = logging.getLogger(__name__)
+
+# User-friendly error
+raise UserError("This action is not allowed.")
+# Validation error (for constraints)
+raise ValidationError("Field X must be unique.")
+
+# Logging
+_logger.info("A custom message: %s", my_variable)
+_logger.warning("Something potentially problematic happened.")
+_logger.error("An error occurred: %s", str(e))
+_logger.debug("Debug information.")
+
+==================== END: odoo-orm-examples ====================
+
+==================== START: odoo-ai-model-types ====================
+
+Odoo AI Model Types and Use Cases
+This section outlines common AI model types and their potential applications within Odoo workflows.
+
+1. Natural Language Processing (NLP)
+Description: AI models that understand, interpret, and generate human language.
+Odoo Use Cases:
+Text Classification:
+Categorizing incoming support tickets (e.g., "Technical Issue," "Billing," "Feature Request").
+Classifying customer emails (e.g., "Inquiry," "Complaint," "Order Confirmation").
+Tagging product descriptions based on attributes.
+Sentiment Analysis:
+Analyzing customer feedback (from chatter, emails) to gauge satisfaction.
+Assessing sentiment in social media mentions linked to Odoo records.
+Text Summarization:
+Summarizing long customer notes or contract terms in Odoo.
+Generating brief internal summaries of external documents linked to opportunities.
+Named Entity Recognition (NER):
+Extracting key entities (e.g., company names, dates, product codes) from unstructured text in Odoo records.
+Populating fields automatically from email content.
+Chatbots/Virtual Assistants:
+Providing automated responses to common customer queries through Odoo's website chat.
+Internal Odoo user support.
+2. Regression Models
+Description: AI models used for predicting a continuous numerical output.
+Odoo Use Cases:
+Sales Forecasting: Predicting future sales volumes or revenue based on historical Odoo sales data.
+Inventory Demand Prediction: Forecasting demand for products to optimize stock levels and reordering.
+Lead Scoring: Predicting the likelihood of a lead converting to an opportunity (though often handled by classification as 'high/medium/low').
+Delivery Time Prediction: Estimating delivery times for orders.
+3. Classification Models
+Description: AI models used for predicting a discrete categorical output (e.g., "yes/no," "A/B/C").
+Odoo Use Cases:
+Lead Scoring: Classifying leads as "Hot," "Warm," or "Cold" based on CRM data.
+Fraud Detection: Identifying potentially fraudulent sales orders or payments.
+Customer Churn Prediction: Predicting which customers are at risk of leaving.
+Document Categorization: Automatically assigning documents (e.g., invoices, contracts) to specific Odoo document types.
+Product Recommendation: Recommending products to customers based on their purchase history (can also be collaborative filtering).
+4. Time Series Models
+Description: Specialized models for forecasting data points in time series (data points ordered by time).
+Odoo Use Cases:
+Advanced Sales Forecasting: More granular and robust forecasting, considering seasonality, trends, and external factors.
+Inventory Optimization: Predicting short-term stock needs with higher accuracy.
+Resource Planning: Forecasting resource (e.g., manufacturing capacity, support agent) requirements.
+5. Computer Vision (CV)
+Description: AI models that enable computers to "see" and interpret visual information.
+Odoo Use Cases (More Niche, but Growing):
+Invoice/Document Processing: Extracting data from scanned invoices or receipts for automated entry into Odoo.
+Product Recognition: Identifying products from images (e.g., for inventory auditing).
+Quality Control: Detecting defects in manufactured goods by analyzing images.
+Face Recognition: (Highly sensitive, use with extreme caution and clear privacy policies) for time tracking or access control.
+6. Anomaly Detection Models
+Description: AI models used to identify rare items, events, or observations that deviate significantly from the majority of the data.
+Odoo Use Cases:
+Fraud Detection: Flagging unusual financial transactions or employee expenses.
+System Monitoring: Identifying unusual patterns in Odoo server logs or user activity indicating a security breach or performance issue.
+Data Quality: Pinpointing data entry errors or inconsistencies that fall outside normal patterns.
+Considerations for Odoo:
+
+Data Availability: Odoo's rich dataset makes it a great source for training and inference.
+Integration Complexity: Direct integration might involve custom Odoo modules using Python's requests for external APIs or odoo-ai specific libraries (if available).
+Performance: For real-time AI, latency is crucial. For batch AI, consider scheduled actions (ir.cron) or background jobs (queue_job).
+Cost: External AI services (like Google Cloud AI, Azure AI, OpenAI) incur costs based on usage. ==================== END: odoo-ai-model-types ====================
+==================== START: odoo-ai-integration-patterns ====================
+Odoo AI Integration Patterns
+This section describes common architectural patterns for integrating AI functionalities with Odoo.
+
+1. Direct API Integration (Synchronous)
+Description: Odoo directly calls an external AI service's REST API and waits for an immediate response.
+When to Use:
+For real-time predictions or analysis where immediate results are needed (e.g., lead scoring on save, instant text analysis).
+When AI tasks are relatively quick to process (low latency).
+For smaller data volumes.
+Pros: Simplicity, immediate feedback to the user.
+Cons:
+Blocking UI: Long-running AI tasks can freeze the Odoo user interface.
+Scalability: Can hit API rate limits if many users trigger calls simultaneously.
+Error Handling: Requires robust error handling for external service downtime or network issues.
+Odoo Implementation: Python requests library within an Odoo model method, triggered by a button click, onchange, or create/write override.
+2. Asynchronous Processing (Via Odoo queue_job or ir.cron)
+Description: Odoo triggers an AI task in the background, allowing the user to continue working. Results are then processed when available.
+When to Use:
+For long-running AI tasks (e.g., batch processing of data, complex NLP analysis, image processing).
+To avoid blocking the Odoo UI.
+For large data volumes where real-time response isn't critical.
+Pros: Improved user experience, better scalability, resilience to temporary AI service outages.
+Cons: Results are not immediate; requires mechanisms to notify users when results are ready.
+Odoo Implementation:
+queue_job (Community module): Decorate methods with @job to run them in a separate process.
+ir.cron (Scheduled Actions): For periodic batch AI processing (e.g., nightly analysis of all new leads).
+_compute_job (Odoo Enterprise): A similar mechanism for background jobs.
+Results stored in Odoo fields once available, possibly triggering an Odoo notification.
+3. Webhook / Callback Integration
+Description: Odoo makes an initial request to an AI service, which then notifies Odoo (via a webhook) once the processing is complete.
+When to Use:
+When the AI service itself offers webhook capabilities.
+For processes that might take a significant amount of time and Odoo needs to be informed upon completion.
+Pros: Efficient, AI service manages the long-running task, Odoo is only involved when needed.
+Cons: Requires Odoo to be publicly accessible or have a secure tunnel for incoming webhooks; adds complexity for webhook security.
+Odoo Implementation:
+Odoo custom controller (http.Controller) to expose a public endpoint for the webhook.
+Validate incoming webhook requests (signatures, IP whitelisting).
+4. Message Queue Integration (e.g., RabbitMQ, Kafka)
+Description: Odoo publishes messages to a message queue, an external worker (listening to the queue) picks up the message, interacts with the AI service, and then publishes results back to another queue, which Odoo consumes.
+When to Use:
+For highly scalable, decoupled architectures.
+When integrating with multiple AI services or microservices.
+For complex event-driven workflows.
+Pros: Highly scalable, fault-tolerant, loose coupling between Odoo and AI service.
+Cons: Adds significant architectural complexity, requires managing an external message queue system.
+Odoo Implementation: Custom Odoo module using Python libraries for message queue interaction (e.g., pika for RabbitMQ). Requires external worker processes.
+5. Embedded / On-Premise AI Models
+Description: The AI model (or a lightweight version) runs directly within the Odoo server environment or on a co-located server.
+When to Use:
+For sensitive data that cannot leave the local network.
+For high-frequency, low-latency predictions where external API calls are too slow.
+When using open-source AI libraries (e.g., scikit-learn, spaCy) for simpler models.
+Pros: Low latency, full control over data, no external API costs (except for infrastructure).
+Cons: Resource-intensive (requires sufficient Odoo server resources), model updates/management can be more complex, limited to models that can run locally.
+Odoo Implementation: Python code within Odoo models using AI libraries directly. Model files stored on the Odoo server.
+Choosing a Pattern:
+The best pattern depends on your specific use case, required latency, data volume, budget, and architectural preferences. Start with the simplest pattern that meets your needs and scale up if necessary.
+==================== END: odoo-ai-integration-patterns ====================
+==================== START: odoo-owl-concepts ====================
+# Odoo OWL (Odoo Web Library) Concepts
+
+OWL is a modern, component-based JavaScript framework developed by Odoo. It's designed to build highly interactive and reactive user interfaces within the Odoo web client, website, and Point of Sale (PoS).
+
+## 1. Components
+-   **Definition:** The fundamental building block of OWL applications. A component is a self-contained, reusable piece of UI that encapsulates its own logic and view.
+-   **Structure:** Typically consists of a JavaScript class (extending `Component`) and an associated QWeb template (`static template = xml` or a separate XML file).
+-   **Lifecycle:** Components have lifecycle hooks (`setup`, `onWillStart`, `onMounted`, `onWillUpdate`, `onWillDestroy`, `onRendered`, `onPatched`) that allow running code at specific points in their existence.
+
+## 2. QWeb Templating
+-   **Purpose:** OWL uses QWeb for declarative UI definition. QWeb is Odoo's powerful templating engine, allowing to mix HTML with Python-like directives.
+-   **Directives:**
+    -   `t-name`: Defines the name of a template.
+    -   `t-if`/`t-elif`/`t-else`: Conditional rendering.
+    -   `t-foreach`: Iterating over lists.
+    -   `t-esc`: Escapes HTML characters (safe for displaying user input).
+    -   `t-out`: Does not escape HTML (for displaying raw HTML).
+    -   `t-att`, `t-attf`: Dynamic attribute setting.
+    -   `t-on-*`: Event binding (e.g., `t-on-click`, `t-on-input`).
+    -   `<t-component>`: Renders another OWL component.
+-   **XML Files:** QWeb templates for OWL components are typically defined in `.xml` files within the `static/src/xml` directory and loaded via `web.assets_qweb` in `__manifest__.py`.
+
+## 3. State Management (`useState`)
+-   **`useState` Hook:** The primary mechanism for managing reactive local state within a component.
+-   **Reactivity:** When a property on an object wrapped by `useState` is changed, OWL automatically re-renders the component and its children that depend on that state.
+-   **Immutability:** While `useState` wraps the object, it's good practice to treat state updates carefully, sometimes creating new objects/arrays for complex changes to ensure reactivity.
+
+## 4. Props (`static props`)
+-   **Definition:** `props` are properties passed from a parent component to a child component. They are read-only for the child.
+-   **Declaration:** Declared using `static props = { ... }` in the component class, specifying name, type, optionality, and default values.
+-   **Unidirectional Data Flow:** Data flows down from parent to child via props. To communicate back, children emit events.
+
+## 5. Hooks
+-   **Definition:** Functions that "hook into" OWL's reactive system and component lifecycle. They can only be called inside the `setup()` method.
+-   **Common Hooks:**
+    -   `useState`: For local reactive state.
+    -   `useRef`: For direct DOM element access.
+    -   `useService`: For injecting and using Odoo's frontend services (e.g., `orm`, `notification`, `router`).
+    -   `onMounted`: Runs code after the component is first rendered and inserted into the DOM.
+    -   `onWillUpdate`/`onPatched`: Runs before/after a component's update.
+    -   `onWillDestroy`: Runs before a component is removed from the DOM.
+
+## 6. Services (`useService`, `registry`)
+-   **Definition:** Global, singleton objects that provide common functionalities (e.g., making RPC calls, showing notifications, routing).
+-   **Accessing:** Components access services using the `useService` hook (`this.env.services.service_name`).
+-   **Registration:** Services are registered in Odoo's frontend `registry` (`@web/core/registry`).
+
+## 7. Patching (Extending Core Components)
+-   **`patch` function:** Used to modify or extend the behavior of existing OWL components or JavaScript classes provided by Odoo.
+-   **Non-destructive:** `patch` is non-destructive; it extends functionality without directly altering the original class, making upgrades easier.
+-   **Example:** Patching `FormController` to add custom logic to a form view.
+
+## 8. Asset Bundling
+-   **`__manifest__.py`:** OWL component JS and XML (QWeb) files must be included in an appropriate `assets` bundle in the Odoo module's `__manifest__.py` file (e.g., `web.assets_backend`, `web.assets_frontend`, `web.assets_qweb`).
+-   **Order:** The order of files in `assets` bundles can be important for dependencies.
+==================== END: odoo-owl-concepts ====================
+
+==================== START: odoo-web-framework-guide ====================
+# Odoo Web Framework Guide (Backend Client)
+
+The Odoo Web framework is the foundation for the Odoo backend user interface. It is built on JavaScript, QWeb, and OWL (for newer Odoo versions).
+
+## 1. Module Structure and Assets
+-   **`static/src/js/`**: Contains JavaScript files for custom logic, widgets, and OWL components.
+-   **`static/src/xml/`**: Contains QWeb templates (`.xml` files) used by JavaScript for rendering UI elements.
+-   **`static/src/scss/`**: Contains SCSS (Sass) files for custom styling.
+-   **`static/src/img/`**: For images used in the frontend.
+-   **`__manifest__.py`**: Frontend files must be declared in the `assets` key to be loaded by Odoo.
+    -   `web.assets_backend`: For assets specific to the backend (admin) interface.
+    -   `web.assets_frontend`: For assets specific to the public website.
+    -   `web.assets_qweb`: For QWeb templates loaded by the JS framework.
+    -   Custom bundles can be created for modularity.
+
+## 2. JavaScript Modules (`@odoo-module`, `registry`)
+-   **`@odoo-module`:** The standard way to define an Odoo JavaScript module. Each `.js` file typically starts with `/** @odoo-module **/`.
+-   **`registry`:** The central place in Odoo's frontend where various components, services, and extensions are registered.
+    -   `registry.category("services")`: For global services (e.g., `orm`, `notification`).
+    -   `registry.category("views")`: For custom view types (e.g., a custom Kanban view).
+    -   `registry.category("fields")`: For custom field widgets (e.g., a custom color picker).
+    -   `registry.category("actions")`: For custom actions handled by the `ActionManager`.
+-   **Patching (`patch`):** The preferred way to extend or modify existing Odoo JavaScript components and classes without directly inheriting and duplicating code. This is crucial for maintainability and upgrade compatibility.
+
+## 3. QWeb Templating (for JS)
+-   QWeb templates (`.xml` files) are used by JavaScript components to render HTML.
+-   They are loaded via `web.assets_qweb` in `__manifest__.py`.
+-   They provide a powerful way to define dynamic HTML structures, including loops, conditionals, and event bindings.
+
+## 4. Odoo RPC (Remote Procedure Calls)
+-   The primary way for JavaScript in the frontend to communicate with the Python backend.
+-   Performed via `this.env.services.rpc` or `this.orm.call()`.
+-   Allows calling any Python method exposed as a `@api.model` or `@api.multi` method in Odoo models, or methods in `http.Controller` classes.
+
+## 5. Extending Views (XML)
+-   **Inheritance:** Odoo's XML views can be extended using `inherit_id` and `xpath`.
+-   **`xpath`:** Allows precise insertion (`position="after"`, `before`, `inside`), replacement (`position="replace"`), or attribute modification (`position="attributes"`) within existing XML view structures.
+-   **Custom Widgets:** New JavaScript widgets can be integrated into XML views by specifying `widget="my_custom_widget_name"` on a `<field>` tag or directly using `<widget name="my_custom_widget_name"/>`.
+
+## 6. Action Manager
+-   Handles various actions triggered by the backend (e.g., opening a form view, a report, a wizard).
+-   Developers can register custom action types in `registry.category("actions")` to define new behaviors.
+
+## 7. Debugging
+-   **Browser Developer Tools:** The most important tool. Use the Console for JS errors/logs, Sources for breakpoints and code stepping, Network for RPC calls, and Elements for DOM/CSS inspection.
+-   **`odoo.debug=assets`:** Adding this to the URL (`?debug=assets`) or enabling debug mode with assets will load JS files individually, making debugging easier.
+-   **`console.log()` / `debugger;`:** Essential for inspecting values and pausing execution.
+==================== END: odoo-web-framework-guide ====================
+
+==================== START: odoo-website-guide ====================
+# Odoo Website Development Guide
+
+Odoo's Website module allows building dynamic, customizable public websites directly from Odoo. It leverages QWeb, Python controllers, and a block-based editor.
+
+## 1. Website Structure
+-   **Templates (`ir.ui.view`):** All website pages and components are ultimately QWeb templates stored as `ir.ui.view` records.
+-   **Layout Template (`website.layout`):** The base template for all website pages. Custom pages usually extend or call this.
+-   **Theme:** A collection of views, assets (CSS/JS), and data that define the look and feel of the website. Themes are Odoo modules.
+
+## 2. Page Creation
+-   **Static Pages:** Defined directly in XML as QWeb templates (e.g., `views/my_page.xml`). They are loaded into `website.layout`.
+-   **Dynamic Pages:** Rendered by Python controllers (`http.Controller`). The controller fetches data from Odoo models and passes it to a QWeb template for rendering.
+
+## 3. Themes
+-   **Module Structure:** A theme is an Odoo module with a `views/` directory (for templates), `static/src/scss/` (for CSS), `static/src/js/` (for JS), and a `__manifest__.py` file declaring it as a theme (`'application': True`, `'category': 'Theme/...'`).
+-   **Inheritance:** Themes often inherit from `website.theme_common` or other themes.
+-   **Asset Bundles:** Frontend assets are typically defined in `web.assets_frontend` or `web.assets_website`.
+
+## 4. Snippets (Building Blocks)
+-   **Definition:** Reusable content blocks that users can drag and drop onto website pages in edit mode.
+-   **Implementation:** Consists of:
+    1.  **QWeb Template:** Defines the HTML structure of the snippet (`<template id="..." name="...">`).
+    2.  **`snippet_options`:** XML to define the editor-side customization options for the snippet (e.g., background color, text alignment).
+    3.  **JavaScript (Optional):** For interactive snippet behavior on the frontend.
+-   **Registration:** Snippets are typically registered in `views/snippets.xml` and `views/options.xml`.
+
+## 5. Python Controllers (`http.Controller`)
+-   **Purpose:** Handle URL routes, fetch data from Odoo backend, process form submissions, and render QWeb templates for website pages.
+-   **Decorators:**
+    -   `@http.route`: Defines the URL route, HTTP methods, and authentication (`auth='public'`, `auth='user'`, `auth='none'`).
+    -   `website=True`: Marks the route as part of the website, enabling website-specific features like `website.layout` and `s_website_slides`.
+-   **`request` object:** Provides access to Odoo environment, current user, HTTP request details, and more.
+-   **`request.render()`:** Used to render a QWeb template and pass data to it.
+
+## 6. Frontend JavaScript (`web.assets_frontend`)
+-   For interactive elements on the website, custom JavaScript can be included in `web.assets_frontend`.
+-   Can use jQuery (still common in Odoo frontend), OWL components, or vanilla JS.
+
+## 7. Styling (SCSS)
+-   Odoo uses SCSS for styling the website. Custom themes will typically have their own SCSS files.
+-   Variables defined in `website.theme_customize_options` can be used to allow users to customize colors/fonts via the website editor.
+
+## 8. Debugging
+-   **Browser Developer Tools:** Inspect HTML, CSS, JavaScript errors.
+-   **Clearing Cache:** Always clear browser cache (Ctrl+F5 or Cmd+R) after making frontend changes.
+-   **Odoo Debug Mode:** Activate developer mode for more insights.
+-   **Server Logs:** Check Odoo server logs for Python controller errors.
+==================== END: odoo-website-guide ====================
+
+==================== START: odoo-pos-customization-guide ====================
+# Odoo Point of Sale (PoS) Customization Guide
+
+Odoo's Point of Sale is a highly customizable, offline-first web application. Customizations primarily involve extending its JavaScript framework.
+
+## 1. PoS Architecture (JavaScript)
+-   **Models:** The PoS system has its own client-side JavaScript models (e.g., `Order`, `Orderline`, `Product`, `CashRegister`) that mirror backend Odoo models. These are defined in `point_of_sale/static/src/js/models.js`.
+-   **Screens:** Represent different views in the PoS interface (e.g., `ProductScreen`, `PaymentScreen`, `ReceiptScreen`).
+-   **Widgets/Components:** Smaller reusable UI elements.
+-   **Core Modules:** PoS is a large JavaScript application; understanding its core modules (`models.js`, `chrome.js`, `screens.js`) is crucial.
+
+## 2. Module Structure & Assets
+-   **Dependency:** Your custom module must have `point_of_sale` as a dependency in `__manifest__.py`.
+-   **Assets:** PoS frontend assets (JS, XML) are loaded via the `point_of_sale.assets` bundle in `__manifest__.py`.
+    -   `static/src/js/`: Your custom PoS JavaScript files.
+    -   `static/src/xml/`: Your custom PoS QWeb templates.
+    -   `static/src/scss/`: Your custom PoS styling.
+
+## 3. Extending PoS JavaScript (Patching)
+-   **`patch`:** For Odoo versions using OWL in PoS (Odoo 14+), the `patch` function (from `@web/core/utils/patch`) is the standard way to extend existing classes/components.
+    -   Example: `patch(Order.prototype, 'my_module.OrderPatch', { ... });`
+-   **`Class.include` (Older PoS):** For Odoo 13 and earlier, the `Class.include` method was used to extend JavaScript classes.
+-   **Common Extensions:**
+    -   Adding custom fields to PoS models (e.g., `Order`, `Orderline`) and ensuring they are saved/loaded correctly via `export_as_json` and `init_from_JSON`.
+    -   Overriding existing methods (e.g., `_addOrderLine`, `_processOrder`).
+    -   Creating custom buttons on screens and handling their logic.
+    -   Developing new PoS screens or popups.
+
+## 4. QWeb Templating for PoS
+-   **HTML Structure:** PoS UI is defined using QWeb templates.
+-   **Extension:** You can extend existing PoS QWeb templates (`t-extend` with `xpath`) to inject custom HTML, buttons, or modify existing elements.
+-   **New Templates:** Create new QWeb templates for custom screens, popups, or widgets.
+
+## 5. Python Backend for PoS
+-   **Data Loading:** To make custom data available in the PoS frontend, you often need to override `_loader_params` methods or `_get_pos_ui_product` (for products) in the backend `pos.config` model to include your fields.
+-   **Saving Data:** When new data needs to be saved from PoS to Odoo, you typically create a custom Python method (e.g., on `pos.order`) that can be called via RPC from the frontend.
+
+## 6. RPC (Remote Procedure Calls)
+-   PoS uses RPC calls to synchronize data with the Odoo backend (e.g., sending orders, fetching product updates).
+-   Custom RPC calls can be made using `this.env.services.rpc` to interact with custom backend methods.
+
+## 7. Debugging PoS
+-   **Browser Developer Tools:** Essential.
+    -   **Console:** For JavaScript errors, `console.log` outputs.
+    -   **Sources:** Set breakpoints in your custom JS files to step through code.
+    -   **Network:** Monitor RPC calls for request/response details.
+    -   **Application:** Crucial for PoS. Inspect `IndexedDB` (for offline data) and `Local Storage` to see the client-side database.
+-   **Clearing PoS Cache:** Go to `Point of Sale > Configuration > Point of Sale`, open your PoS, and click "Clear Cache" or refresh browser (Ctrl+F5) to ensure latest assets are loaded. This is *very* important as PoS aggressively caches.
+-   **Offline Mode:** Test your customizations in both online and offline scenarios.
+
+## 8. Common Customization Areas
+-   Adding fields to order lines, products, or customers.
+-   Custom buttons for actions (e.g., applying discounts, custom reports).
+-   Integration with external hardware (e.g., scales, custom printers).
+-   Custom payment methods.
+-   Modifying product display or search behavior.
+==================== END: odoo-pos-customization-guide ====================

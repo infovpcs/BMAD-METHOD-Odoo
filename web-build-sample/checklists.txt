@@ -1083,5 +1083,373 @@ The Scrum Master should use this checklist to validate that each story contains 
 - BLOCKED: External information required (specify what information)
 
 ==================== END: story-draft-checklist ====================
+==================== START: odoo-module-checklist ====================
+# Odoo Module Development Checklist
+
+- [ ] Module structure is standard and complete (`__manifest__.py`, `models/`, `views/`, `security/`, `data/`, `wizards/`, `static/`, `tests/` etc.)
+- [ ] `__manifest__.py` is correctly filled out with name, summary, description, author, category, version, dependencies, and all data/security files.
+- [ ] All Python files (`.py`) are imported in their respective `__init__.py` files.
+- [ ] Models extend `models.Model` or `models.TransientModel` or `models.AbstractModel` correctly.
+- [ ] Fields are defined with appropriate types, `string`, `required`, `readonly`, `compute`, `inverse`, `store`, `index` attributes, and `help` text.
+- [ ] `_sql_constraints` are used for database-level uniqueness or checks when appropriate.
+- [ ] Python constraints (`@api.constrains`) are used for more complex validation logic.
+- [ ] XML views (form, tree, search, kanban, graph, pivot) are well-structured and follow naming conventions.
+- [ ] All XML views, security rules, and data files are loaded in `__manifest__.py`'s `data` key.
+- [ ] Menu items and actions are correctly defined and linked to views.
+- [ ] Access rights (`ir.model.access.csv`) are properly defined for all models and fields, granting necessary permissions.
+- [ ] Record rules (`ir.rule` records) are implemented if row-level security is needed.
+- [ ] Business logic adheres to Odoo ORM best practices (e.g., batch operations, avoiding N+1 queries).
+- [ ] Dependencies are correctly declared in `__manifest__.py` and are minimal necessary.
+- [ ] Module can be installed and uninstalled cleanly without errors.
+- [ ] Unit and/or integration tests are written for critical business logic and custom methods.
+- [ ] Logging is implemented using Odoo's `_logger` for debugging and auditing.
+- [ ] Translatable strings are wrapped with `_()` for internationalization.
+- [ ] Code follows PEP8 and Odoo coding guidelines (e.g., `pylint odoo-py-model`, `flake8`).
+- [ ] Performance considerations (e.g., `_rec_name`, `index=True` for frequently queried fields, efficient `compute` methods) are addressed.
+- [ ] `auto_install` is set appropriately (`False` for most custom modules).
+- [ ] License is correctly declared and visible.
+- [ ] Documentation for the module (README.md, functional specs) is updated.
+- [ ] Migration scripts are considered if this is an update to an existing module.
+==================== END: odoo-module-checklist ====================
+
+==================== START: odoo-qa-checklist ====================
+# Odoo QA Checklist
+
+- [ ] **Functional Testing:**
+    - [ ] All defined features work as per functional requirements.
+    - [ ] All forms save correctly.
+    - [ ] All fields display correct values and types.
+    - [ ] Buttons and actions trigger expected behavior.
+    - [ ] Menus navigate to the correct views.
+    - [ ] All workflows (e.g., Sales Order -> Invoice -> Payment) function correctly.
+    - [ ] User stories are fully covered.
+- [ ] **Security Testing:**
+    - [ ] Users with different roles (e.g., Sales, Purchase, restricted users) can only access what they are permitted.
+    - [ ] Record rules prevent unauthorized access to specific records.
+    - [ ] No direct access to sensitive data via developer mode or browser console.
+- [ ] **Data Integrity:**
+    - [ ] Data is consistently stored across related models.
+    - [ ] Required fields are enforced.
+    - [ ] Unique constraints are working as expected.
+    - [ ] Deleting master data correctly handles or prevents deletion of related records.
+- [ ] **Performance Testing:**
+    - [ ] Views load within acceptable times.
+    - [ ] Complex operations (e.g., generating reports, large imports) do not freeze the system.
+    - [ ] No N+1 query issues observed in logs or via performance monitoring.
+- [ ] **Usability / UX Testing:**
+    - [ ] User interface is intuitive and easy to navigate.
+    - [ ] Fields are logically grouped and ordered.
+    - [ ] Error messages are clear and helpful.
+    - [ ] Responsive design works on various screen sizes (if applicable).
+- [ ] **Error Handling:**
+    - [ ] System handles invalid inputs gracefully.
+    - [ ] Relevant error messages are displayed to the user when errors occur.
+    - [ ] Detailed errors are logged on the server side.
+- [ ] **Localization / Internationalization (if applicable):**
+    - [ ] All strings are translatable.
+    - [ ] Dates, numbers, and currency formats are correct for target locales.
+- [ ] **Compatibility:**
+    - [ ] Module works with the target Odoo version.
+    - [ ] Module is compatible with other installed modules.
+- [ ] **Documentation:**
+    - [ ] Technical documentation is up-to-date.
+    - [ ] User guides/training materials are created or updated.
+- [ ] **Code Quality (Developer side):**
+    - [ ] Code review completed.
+    - [ ] Automated tests (unit, integration) pass.
+    - [ ] No critical Pylint/Flake8 warnings.
+    - [ ] Code adheres to Odoo coding standards.
+==================== END: odoo-qa-checklist ====================
+
+==================== START: odoo-ai-data-prep-checklist ====================
+# Odoo AI Data Preparation Checklist
+
+- [ ] **Data Identification:**
+    - [ ] Clearly identify all Odoo models and fields relevant to the AI task.
+    - [ ] Identify any external data sources required.
+- [ ] **Data Extraction Strategy:**
+    - [ ] Define the method for extracting data from Odoo (ORM queries, SQL views, direct database access if necessary).
+    - [ ] Consider data volume and performance implications during extraction.
+- [ ] **Data Cleaning:**
+    - [ ] Handle missing values (imputation, removal).
+    - [ ] Correct inconsistencies (e.g., spelling errors, duplicate records).
+    - [ ] Address data type mismatches.
+    - [ ] Remove irrelevant or noisy data.
+- [ ] **Data Transformation:**
+    - [ ] Convert categorical data to numerical (one-hot encoding, label encoding).
+    - [ ] Normalize/Standardize numerical data (scaling features).
+    - [ ] Feature engineering: Create new features from existing Odoo data that might be useful for the AI model.
+    - [ ] Aggregate or disaggregate data as needed.
+- [ ] **Data Anonymization/Privacy (CRITICAL):**
+    - [ ] Identify and anonymize or remove Personally Identifiable Information (PII) or sensitive business data that is not essential for the AI task.
+    - [ ] Ensure compliance with data privacy regulations (GDPR, CCPA, etc.).
+- [ ] **Data Splitting (for Model Training):**
+    - [ ] Define how data will be split into training, validation, and test sets.
+    - [ ] Ensure representativeness across splits (e.g., stratified sampling).
+- [ ] **Data Versioning:**
+    - [ ] Plan how to version the datasets used for AI training/inference.
+- [ ] **Schema Definition:**
+    - [ ] Document the final data schema that will be fed into the AI model.
+- [ ] **Automation:**
+    - [ ] Plan for automating the data preparation pipeline in Odoo (e.g., using scheduled actions, dedicated Odoo wizards).
+==================== END: odoo-ai-data-prep-checklist ====================
+
+==================== START: odoo-ai-deployment-checklist ====================
+# Odoo AI Deployment Checklist
+
+- [ ] **Model Packaging & Dependencies:**
+    - [ ] Ensure all AI model files, libraries, and dependencies are correctly packaged.
+    - [ ] Verify Python environment requirements are met.
+- [ ] **Odoo Module Readiness:**
+    - [ ] Custom Odoo module handling AI integration is fully developed and tested.
+    - [ ] All new fields, models, and views are configured correctly.
+    - [ ] `__manifest__.py` is updated with all dependencies.
+- [ ] **API Security:**
+    - [ ] External AI API keys/credentials are stored securely (e.g., `ir.config_parameter`, environment variables) and NOT hardcoded.
+    - [ ] Odoo API calls are secured (e.g., proper access rights for users triggering AI).
+- [ ] **Error Handling & Logging:**
+    - [ ] Robust error handling for AI API calls (timeouts, network issues, invalid responses).
+    - [ ] Comprehensive logging of AI requests, responses, and errors within Odoo logs.
+    - [ ] Alerts or notifications for critical AI failures.
+- [ ] **Scalability & Performance:**
+    - [ ] AI integration designed to handle expected Odoo data volumes.
+    - [ ] Asynchronous processing (e.g., `queue_job`, `ir.cron`) used for long-running AI tasks.
+    - [ ] Performance impact on core Odoo operations is acceptable.
+- [ ] **Monitoring & Observability:**
+    - [ ] Metrics for AI model performance (accuracy, latency) are collected.
+    - [ ] Odoo dashboards or reports to monitor AI integration health.
+    - [ ] Alerting mechanisms for performance degradation or integration failures.
+- [ ] **Rollback Strategy:**
+    - [ ] A clear plan exists for rolling back the AI integration if issues arise.
+    - [ ] Data backups are in place.
+- [ ] **Documentation:**
+    - [ ] Integration details documented (e.g., `templates#odoo-ai-integration-spec`).
+    - [ ] User instructions for new AI-powered features in Odoo.
+- [ ] **User Acceptance Testing (UAT):**
+    - [ ] Key business users have tested the AI-powered features in a UAT environment and provided sign-off.
+- [ ] **Compliance & Legal:**
+    - [ ] Verify compliance with relevant data privacy regulations (GDPR, CCPA).
+    - [ ] Review AI model usage terms and conditions.
+==================== END: odoo-ai-deployment-checklist ====================
+
+==================== START: odoo-requirements-gathering-checklist ====================
+# Odoo Requirements Gathering Checklist
+
+- [ ] **Project Scoping:**
+    - [ ] Clearly defined project objectives and goals.
+    - [ ] Identified key stakeholders and their roles.
+    - [ ] Defined clear in-scope and out-of-scope items.
+- [ ] **Elicitation Activities Conducted:**
+    - [ ] Stakeholder interviews completed.
+    - [ ] Workshops conducted (e.g., process mapping, brainstorming).
+    - [ ] Existing documentation (manuals, reports, spreadsheets) reviewed.
+    - [ ] Business process observation performed (if applicable).
+    - [ ] User feedback collected.
+- [ ] **Functional Requirements:**
+    - [ ] All essential functionalities documented.
+    - [ ] Each requirement is clear, concise, and unambiguous.
+    - [ ] Requirements are testable.
+    - [ ] Data inputs and outputs are defined for each function.
+    - [ ] Business rules are clearly articulated.
+    - [ ] Reporting and dashboard needs are specified.
+    - [ ] Integration points with other systems are identified.
+- [ ] **Non-Functional Requirements (Initial):**
+    - [ ] High-level performance expectations defined (e.g., response times).
+    - [ ] Security requirements (access control, data protection).
+    - [ ] Usability considerations.
+    - [ ] Scalability expectations.
+- [ ] **Process Mapping (Current & Future State):**
+    - [ ] Current ("as-is") business processes documented.
+    - [ ] Future ("to-be") business processes in Odoo designed.
+    - [ ] Gaps between current and future state identified (configuration vs. customization).
+    - [ ] Process flows clearly illustrated (e.g., flowcharts, sequence diagrams).
+- [ ] **Data Migration Strategy (High-Level):**
+    - [ ] Identified key data to be migrated from legacy systems to Odoo.
+    - [ ] High-level plan for data mapping and transformation.
+- [ ] **User & Role Definition:**
+    - [ ] Identified different user roles in Odoo and their permissions.
+    - [ ] Mapped existing users to Odoo roles.
+- [ ] **Prioritization:**
+    - [ ] Requirements prioritized (e.g., Must-have, Should-have, Could-have, Won't-have).
+- [ ] **Validation & Approval:**
+    - [ ] Requirements reviewed and validated with key stakeholders.
+    - [ ] Formal sign-off obtained (if required).
+- [ ] **Traceability:**
+    - [ ] Each requirement is traceable to a business need and a proposed Odoo solution.
+- [ ] **Documentation Format:**
+    - [ ] Requirements documented in a structured and accessible format.
+    - [ ] Version control applied to requirements documentation.
+==================== END: odoo-requirements-gathering-checklist ====================
+==================== START: odoo-owl-dev-checklist ====================
+# Odoo OWL Development Checklist
+
+- [ ] **Component Definition:**
+    - [ ] OWL component is defined in a separate `.js` file.
+    - [ ] `static template` property correctly points to the QWeb template.
+    - [ ] `static props` are clearly defined with types and optionality.
+    - [ ] `setup()` method initializes state and hooks correctly.
+- [ ] **State Management:**
+    - [ ] `useState` is used for reactive local component state.
+    - [ ] State changes correctly trigger re-renders.
+    - [ ] Avoid direct DOM manipulation where possible, rely on OWL's reactivity.
+- [ ] **Props & Events:**
+    - [ ] Component receives necessary data via `props`.
+    - [ ] Component emits custom events (`this.trigger()`) for parent communication.
+    - [ ] No direct manipulation of parent component's state or props.
+- [ ] **QWeb Templating:**
+    - [ ] QWeb template is defined in a separate `.xml` file.
+    - [ ] `t-name` attribute is unique and correctly referenced.
+    - [ ] Correct use of `t-if`, `t-foreach`, `t-esc`, `t-out`.
+    - [ ] Event handlers (`t-on-click`, `t-on-change`, etc.) are properly bound.
+    - [ ] Sub-components are rendered using `<t-component>`.
+- [ ] **Asset Management:**
+    - [ ] Component's `.js` and `.xml` files are correctly declared in `__manifest__.py` `assets` (e.g., `web.assets_backend`, `web.assets_frontend`, `web.assets_qweb` or custom bundle).
+    - [ ] Asset paths are correct.
+- [ ] **Odoo Integration:**
+    - [ ] Component is correctly instantiated and rendered in its target Odoo environment (web client, website, PoS).
+    - [ ] Odoo services (`useService`) are correctly injected and used (e.g., `orm`, `notification`, `router`).
+    - [ ] RPC calls are made via `this.orm.call()` or `this.env.services.rpc` and handle promises correctly.
+- [ ] **Performance:**
+    - [ ] Component renders efficiently; avoid excessive re-renders.
+    - [ ] Large lists use appropriate rendering techniques (e.g., virtual scrolling if needed).
+- [ ] **Error Handling:**
+    - [ ] `try...catch` blocks for RPC calls or other async operations.
+    - [ ] User-friendly error messages where applicable.
+- [ ] **Code Quality:**
+    - [ ] Code is well-structured and follows Odoo's JavaScript coding guidelines.
+    - [ ] Proper use of `/** @odoo-module **/` and `import`/`export`.
+    - [ ] Clear comments and meaningful variable/function names.
+- [ ] **Debugging:**
+    - [ ] Component is debuggable using browser developer tools.
+    - [ ] Useful `console.log` statements are in place during development.
+==================== END: odoo-owl-dev-checklist ====================
+
+==================== START: odoo-web-dev-checklist ====================
+# Odoo Web Development Checklist (Backend Client)
+
+- [ ] **Module Structure:**
+    - [ ] Custom module follows standard Odoo structure for frontend assets (`static/src/js`, `static/src/xml`, `static/src/scss`, `static/src/img`).
+- [ ] **Asset Bundling:**
+    - [ ] All JS, XML (QWeb), SCSS files are correctly specified in `__manifest__.py` under the appropriate `assets` bundle (e.g., `web.assets_backend`, `web.assets_qweb`, custom bundles).
+    - [ ] Order of assets in bundle is correct (dependencies loaded first).
+- [ ] **JavaScript Best Practices:**
+    - [ ] Code is modular (`@odoo-module`, `import/export`, `registry`).
+    - [ ] Proper use of Odoo's `registry` for extending services, widgets, fields, actions.
+    - [ ] Avoid global variables; encapsulate logic within modules/classes.
+    - [ ] Use `patch` for extending existing Odoo core components (if applicable).
+    - [ ] Asynchronous operations (RPC, Promises) are handled correctly.
+- [ ] **QWeb Templating:**
+    - [ ] XML files containing QWeb templates are loaded correctly in `web.assets_qweb`.
+    - [ ] Templates have unique `t-name` attributes.
+    - [ ] All data displayed is correctly escaped (`t-esc`) or output (`t-out`).
+- [ ] **UI Integration:**
+    - [ ] Custom fields/widgets are properly declared in Odoo XML views.
+    - [ ] View inheritance via `xpath` is correct and robust (position, expressions).
+    - [ ] New actions or menu items correctly link to custom frontend logic.
+- [ ] **RPC (Backend Communication):**
+    - [ ] Frontend makes RPC calls to `controller` or `model` methods correctly.
+    - [ ] Backend methods exposed for RPC are decorated with `@api.model`, `@api.multi`, or `@api.onchange` as appropriate.
+    - [ ] Data passed between frontend/backend is validated.
+- [ ] **Security:**
+    - [ ] Frontend code does not expose sensitive information.
+    - [ ] Backend methods called via RPC have proper access rights.
+- [ ] **Performance:**
+    - [ ] Frontend logic does not cause UI lag or excessive network requests.
+    - [ ] Efficient rendering of large datasets.
+- [ ] **Responsiveness & Usability:**
+    - [ ] UI is responsive and usable across different screen sizes.
+    - [ ] User experience is intuitive and consistent with Odoo's design.
+- [ ] **Error Handling & Logging:**
+    - [ ] Frontend errors are gracefully handled and logged to browser console.
+    - [ ] User is notified of critical errors where appropriate.
+    - [ ] Backend logs reflect relevant RPC errors.
+- [ ] **Testing:**
+    - [ ] Frontend components have unit/integration tests if applicable.
+    - [ ] Manual testing covers all new and extended functionalities.
+==================== END: odoo-web-dev-checklist ====================
+
+==================== START: odoo-website-dev-checklist ====================
+# Odoo Website Development Checklist
+
+- [ ] **Module Setup:**
+    - [ ] Custom module lists `website` as a dependency in `__manifest__.py`.
+    - [ ] Assets (JS, CSS) are defined in `__manifest__.py` under `web.assets_frontend` or `web.assets_website` or custom bundles.
+- [ ] **Page Creation:**
+    - [ ] New static pages are defined as QWeb templates in XML files.
+    - [ ] Pages are linked to menu items if required.
+- [ ] **Template Extension:**
+    - [ ] Existing Odoo website QWeb templates are extended using `t-extend` and precise `xpath` expressions.
+    - [ ] Changes are non-intrusive and do not break core website functionality.
+- [ ] **Snippet Development:**
+    - [ ] Custom snippets are defined with clear QWeb templates (`<template id="..." name="...">`).
+    - [ ] Snippets have intuitive UI options defined in `views/options.xml` if needed.
+    - [ ] JavaScript for snippet interactivity is correctly implemented and loaded.
+- [ ] **Controller Development/Extension:**
+    - [ ] Python controllers use `@http.route` with `type='http'` and `website=True`.
+    - [ ] `auth` is set appropriately (`public`, `user`, `none`).
+    - [ ] Controllers render templates using `request.render()` and pass necessary data.
+    - [ ] Form submissions are handled securely (e.g., CSRF protection where applicable).
+- [ ] **Frontend Technologies:**
+    - [ ] JavaScript is used modularly; avoid global variables.
+    - [ ] CSS is well-organized (e.g., using SCSS, BEM methodology) and adheres to Odoo's theme structure.
+    - [ ] Responsive design principles are applied for mobile-friendliness.
+- [ ] **Data Interaction:**
+    - [ ] Data fetched from Odoo backend in controllers is efficient.
+    - [ ] User input from website forms is validated and securely stored.
+- [ ] **SEO & Performance:**
+    - [ ] Pages have appropriate meta tags and titles.
+    - [ ] Images are optimized; lazy loading considered.
+    - [ ] Overall page load times are acceptable.
+- [ ] **Security:**
+    - [ ] Forms are protected against common web vulnerabilities (XSS, SQL Injection).
+    - [ ] Public-facing controllers carefully manage data exposure.
+- [ ] **User Experience:**
+    - [ ] Website navigation is clear and intuitive.
+    - [ ] Custom features integrate seamlessly with existing Odoo website design.
+- [ ] **Testing:**
+    - [ ] All custom pages and features are tested across different browsers and devices.
+    - [ ] Form submissions and dynamic elements are thoroughly tested.
+    - [ ] Ensure clearing browser cache resolves display issues during development.
+==================== END: odoo-website-dev-checklist ====================
+
+==================== START: odoo-pos-dev-checklist ====================
+# Odoo Point of Sale (PoS) Development Checklist
+
+- [ ] **Module Setup:**
+    - [ ] Custom module lists `point_of_sale` as a dependency.
+    - [ ] PoS-specific assets (JS, XML) are declared in `__manifest__.py` under the `point_of_sale.assets` bundle.
+- [ ] **JavaScript Architecture:**
+    - [ ] Understands the PoS JavaScript architecture (models, screens, widgets).
+    - [ ] Uses `patch` (for OWL-based PoS) or `Class.include` (for older versions) to extend existing components.
+    - [ ] Avoids directly modifying core PoS files; always extend.
+- [ ] **PoS Models Extension:**
+    - [ ] New fields are added to `Order`, `Orderline`, `Product`, `Customer` models where needed.
+    - [ ] `export_as_json` and `init_from_JSON` methods are overridden to handle custom fields correctly for data synchronization.
+- [ ] **UI Customization:**
+    - [ ] New buttons, screens, or widgets are correctly integrated into the PoS UI.
+    - [ ] QWeb templates for PoS UI (`static/src/xml`) are properly extended/created.
+    - [ ] Events are correctly handled (`t-on-click`, `onClick` methods).
+- [ ] **Backend Communication (RPC):**
+    - [ ] PoS makes efficient RPC calls to the Odoo backend when necessary (e.g., fetching custom data, saving custom fields).
+    - [ ] Backend Python methods invoked by PoS are secure and performant.
+- [ ] **Data Persistence:**
+    - [ ] Ensures custom data created in PoS is correctly synchronized and persisted to the Odoo backend.
+    - [ ] Handles offline mode considerations (data queuing, re-synchronization).
+- [ ] **Error Handling:**
+    - [ ] Robust error handling for network issues or backend RPC failures.
+    - [ ] User-friendly error messages are displayed in PoS.
+    - [ ] Critical errors are logged to the browser console.
+- [ ] **Performance:**
+    - [ ] PoS remains responsive, especially during busy periods.
+    - [ ] Customizations do not introduce significant lag.
+    - [ ] Large data sets are handled efficiently.
+- [ ] **Usability:**
+    - [ ] Customizations enhance the PoS user experience for cashiers.
+    - [ ] UI elements are intuitive and consistent with PoS design.
+- [ ] **Testing:**
+    - [ ] Thoroughly tests custom PoS functionalities in various scenarios (online/offline, different products/customers).
+    - [ ] Ensures clearing browser cache and restarting PoS session during development to pick up latest changes.
+    - [ ] Manual testing covers end-to-end flows.
+==================== END: odoo-pos-dev-checklist ====================
 
 

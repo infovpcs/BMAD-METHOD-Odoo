@@ -1365,5 +1365,852 @@ Please provide:
 Would you like to proceed with library indexing? Please provide the required input above.
 
 ==================== END: library-indexing-task ====================
+==================== START: create-odoo-module ====================
+# Task: Create Odoo Module
+
+## Goal
+To guide the user through the creation of a new Odoo custom module, ensuring it follows standard Odoo structure and best practices.
+
+## Process Steps
+
+1. **Module Definition:**
+   - Ask the user for the module's technical name (e.g., `my_custom_module`).
+   - Ask for the module's human-readable name (e.g., "My Custom Module").
+   - Ask for a brief description of the module's purpose.
+   - Inquire about dependencies on existing Odoo modules (e.g., `base`, `web`, `sale`).
+   - Ask about the module's category (e.g., "Sales", "Accounting", "Tools").
+
+2. **Module Structure Generation:**
+   - Guide the user to create the basic directory structure:
+     ```
+     my_custom_module/
+     ├── __init__.py
+     ├── __manifest__.py
+     ├── models/
+     │   └── __init__.py
+     │   └── my_model.py
+     ├── views/
+     │   └── my_views.xml
+     ├── security/
+     │   └── ir.model.access.csv
+     ├── data/ (optional)
+     ├── wizards/ (optional)
+     │   └── __init__.py
+     │   └── my_wizard.py
+     ├── demo/ (optional)
+     └── static/ (optional, for web assets)
+     ```
+
+3. **`__manifest__.py` Creation:**
+   - Provide the template for `__manifest__.py` and guide the user to fill in details.
+   - Use `templates#odoo-manifest-tmpl`.
+
+4. **Model Creation:**
+   - Guide the user through creating a basic Odoo model in `models/my_model.py`.
+   - Ask for model name, fields (type, string, required, etc.), and any methods.
+   - Use `templates#odoo-model-tmpl`.
+   - Guide adding `from . import my_model` to `models/__init__.py`.
+
+5. **View Creation:**
+   - Guide the user through creating basic XML views in `views/my_views.xml` (form, tree, action, menuitem).
+   - Use `templates#odoo-view-tmpl`.
+   - Guide adding `views/my_views.xml` to the `data` list in `__manifest__.py`.
+
+6. **Security Definition:**
+   - Guide the user to create `security/ir.model.access.csv` for access rights.
+   - Use `templates#odoo-security-tmpl`.
+   - Guide adding `security/ir.model.access.csv` to the `data` list in `__manifest__.py`.
+
+7. **Testing Guidance (Optional but Recommended):**
+   - Suggest creating a `tests/` directory and writing basic unit tests.
+   - Recommend referring to `checklists#odoo-qa-checklist`.
+
+8. **Summary and Next Steps:**
+   - Provide a summary of the created files and structure.
+   - Offer guidance on how to install the module in Odoo.
+
+## Required Input
+- Module Technical Name
+- Module Human-Readable Name
+- Module Description
+- Module Dependencies (comma-separated list, e.g., `base, web, mail`)
+- Module Category
+- Details for initial models, fields, and views (as requested by the agent during the process).
+
+==================== END: create-odoo-module ====================
+
+==================== START: debug-odoo-code ====================
+# Task: Debug Odoo Code
+
+## Goal
+To assist the user in debugging issues within Odoo custom modules or standard Odoo behavior.
+
+## Process Steps
+
+1. **Problem Description:**
+   - Ask the user to describe the issue in detail, including:
+     - What is happening?
+     - What should be happening?
+     - When does it occur (steps to reproduce)?
+     - Any error messages from Odoo logs or browser console.
+     - Is it in a custom module or standard Odoo?
+     - Odoo version.
+
+2. **Initial Analysis & Location:**
+   - Based on the description, suggest common areas to check (e.g., Python models, XML views, JavaScript, security rules, computed fields, `depends`).
+   - Ask the user to provide relevant code snippets (Python, XML, JS) that might be related to the issue.
+
+3. **Debugging Strategy:**
+   - Guide the user through common Odoo debugging techniques:
+     - **Server Logs:** "Check the Odoo server logs (e.g., `odoo.log`) for Python tracebacks or warnings."
+     - **Browser Developer Tools:** "For UI issues, use your browser's developer tools (F12) to inspect network requests, console errors, and DOM structure."
+     - **`_logger`:** "Suggest adding `_logger.info("Debug message: %s", my_variable)` to relevant Python code."
+     - **`pdb` / `ipdb`:** "If remote debugging is set up, guide them on using Python debuggers (`pdb.set_trace()`)."
+     - **`raise UserError` / `ValidationError`:** "Suggest temporary `UserError` to quickly check values."
+     - **PostgreSQL:** "For database issues, consider inspecting table data directly in PostgreSQL."
+
+4. **Iterative Troubleshooting:**
+   - Based on the user's findings from each step, suggest the next logical debugging action.
+   - Example: "If the log shows a `NameError`, let's check your Python import statements." or "If the view isn't rendering, check `__manifest__.py` and XML syntax."
+
+5. **Solution Identification:**
+   - Once the root cause is identified, guide the user on how to implement the fix, adhering to Odoo best practices.
+
+## Required Input
+- Detailed problem description and reproduction steps.
+- Relevant code snippets (Python, XML, JS).
+- Odoo version.
+- Odoo server logs, browser console output, or database query results as requested during the process.
+
+==================== END: debug-odoo-code ====================
+
+==================== START: write-odoo-test ====================
+# Task: Write Odoo Test
+
+## Goal
+To assist the user in writing an effective Odoo unit or integration test for a custom module.
+
+## Process Steps
+
+1. **Identify Test Scope:**
+   - Ask the user:
+     - What specific Odoo model or method needs to be tested?
+     - What scenario or bug is this test meant to cover?
+     - Is it a unit test (isolated method) or an integration test (full flow)?
+     - Which module is the test for?
+
+2. **Choose Test Class Type:**
+   - Explain Odoo test classes:
+     - `common.TransactionCase`: Most common, creates a new transaction for each test method (rolls back), good for most unit/integration tests.
+     - `common.HttpCase`: For testing web controllers.
+     - `common.Form`: For testing form views interaction.
+   - Advise on the best class for their scenario.
+
+3. **Test File Structure:**
+   - Guide creating `my_module/tests/test_my_feature.py`.
+   - Guide adding `from . import test_my_feature` to `my_module/tests/__init__.py`.
+   - Guide adding `tests` to the `__manifest__.py` `data` or `installable` sections depending on Odoo version and intent.
+
+4. **Basic Test Template:**
+   - Provide a basic test case template using `templates#odoo-test-tmpl`.
+   - Guide the user on:
+     - Importing necessary Odoo modules (`odoo.tests.common`).
+     - Setting up test data (`setUp` method).
+     - Writing assertion methods (`self.assertEqual`, `self.assertTrue`, `self.assertIn`, etc.).
+
+5. **Scenario Implementation:**
+   - Walk through translating the test scope into test code:
+     - Creating test records using `self.env['my.model'].create(...)`.
+     - Calling methods on test records.
+     - Asserting expected outcomes.
+     - Handling security: `self.env.ref('base.user_demo')` or `self.env(user=user_id)`.
+
+6. **Running Tests:**
+   - Provide instructions on how to run Odoo tests:
+     - `odoo-bin --test-enable -d my_database -i my_module` (for initial install/upgrade with tests)
+     - `odoo-bin --test-enable -d my_database --test-tags /my_module:post_install` (for specific module post-install tests)
+     - `odoo-bin --test-enable -d my_database --test-tags /some_test_tag` (for specific tags)
+
+7. **Review and Refine:**
+   - Review the drafted test code for correctness, clarity, and adherence to Odoo testing best practices.
+   - Ensure the test is atomic and only tests one specific thing.
+
+## Required Input
+- Model/Method to test.
+- Test scenario/bug to cover.
+- Preferred test class type (if known).
+- Relevant existing code snippets if the test is for an existing feature.
+
+==================== END: write-odoo-test ====================
+
+==================== START: design-odoo-ai-workflow ====================
+# Task: Design Odoo AI Workflow
+
+## Goal
+To design an end-to-end workflow for integrating AI capabilities into Odoo, from data input to AI processing and result utilization.
+
+## Process Steps
+
+1. **Identify Odoo Business Problem:**
+   - Ask the user:
+     - What Odoo business process or pain point are you trying to improve with AI? (e.g., automating sales lead scoring, categorizing incoming support tickets, predicting stock levels).
+     - What is the desired outcome or metric you want to influence?
+
+2. **Data Source Identification (Odoo & External):**
+   - Determine which Odoo models and fields contain the necessary data for the AI.
+   - Ask if any external data sources are required.
+   - Discuss data preparation needs (cleaning, transformation, anonymization).
+
+3. **AI Use Case & Model Selection:**
+   - Based on the problem and data, suggest suitable AI use cases (e.g., classification, regression, NLP, forecasting).
+   - Discuss potential AI models or services (e.g., pre-trained APIs like Google Cloud AI, custom models, open-source libraries).
+   - Consider trade-offs: cost, complexity, accuracy, latency.
+
+4. **Workflow Stages & Integration Points:**
+   - Map out the workflow steps:
+     - **Trigger:** When does the AI process start in Odoo? (e.g., on record creation/update, scheduled task, user action).
+     - **Data Extraction:** How will data be pulled from Odoo (ORM, SQL views, direct API)?
+     - **Data Transformation:** Any necessary pre-processing before sending to AI.
+     - **AI Service Call:** How will Odoo communicate with the AI model (REST API, RPC, message queue)?
+     - **AI Result Ingestion:** How will results be received and stored in Odoo (new fields, related records, logs)?
+     - **Action/Automation:** What Odoo actions are triggered by the AI results (e.g., updating a field, creating a task, sending a notification)?
+
+5. **Error Handling & Monitoring:**
+   - Discuss strategies for handling AI service failures, network issues, or unexpected AI outputs.
+   - Plan for monitoring the AI integration's health and performance from within Odoo.
+
+6. **Documentation & Prototyping:**
+   - Recommend documenting the workflow using `templates#odoo-ai-integration-spec`.
+   - Suggest starting with a minimal viable prototype to validate the integration.
+
+## Required Input
+- Description of the Odoo business problem.
+- Odoo models/fields involved.
+- Any external data sources.
+- Desired AI use case (if already thought of).
+
+==================== END: design-odoo-ai-workflow ====================
+
+==================== START: integrate-external-ai-api ====================
+# Task: Integrate External AI API
+
+## Goal
+To guide the user through the process of integrating an external AI API (e.g., OpenAI, Google Cloud AI, custom REST API) into an Odoo custom module.
+
+## Process Steps
+
+1. **API Details & Requirements:**
+   - Ask for details about the external AI API:
+     - API Endpoint URL.
+     - Authentication method (API Key, OAuth2, etc.).
+     - Request method (GET, POST).
+     - Request body/parameters (JSON structure, query params).
+     - Expected response structure.
+     - Rate limits or usage considerations.
+   - Ask for the Odoo model/context where this integration will be used.
+
+2. **Odoo Module Setup:**
+   - If not already existing, guide the user to create a new Odoo custom module or identify an existing one for the integration.
+   - Suggest creating a dedicated Python file (e.g., `my_module/models/ai_integration.py`) for the API logic.
+
+3. **Configuration & Credentials:**
+   - Advise on secure handling of API keys/credentials:
+     - Storing in Odoo system parameters (`ir.config_parameter`) or environment variables.
+     - **Never hardcode credentials.**
+   - Guide setting up a configuration wizard or settings page in Odoo if user needs to manage API settings.
+
+4. **Python Client Implementation:**
+   - Guide the user to implement the Python code in Odoo:
+     - Using `requests` library for HTTP calls.
+     - Constructing the request body and headers.
+     - Handling different HTTP methods.
+     - Parsing the JSON response.
+     - Implementing error handling (try-except blocks for network errors, API errors).
+   - Provide snippets as needed.
+
+5. **Odoo Integration Points:**
+   - Determine how this API call will be triggered in Odoo:
+     - **Button Action:** Add a button to a form view (`<button name="call_ai_api" type="object" string="Analyze with AI"/>`).
+     - **Computed Field:** Update a field based on AI results.
+     - **Scheduled Action (Cron):** Periodically call the API for bulk processing.
+     - **Onchange Method:** (Use with caution for external APIs due to latency).
+     - **Workflow/Automated Action:** Trigger based on record state changes.
+
+6. **Result Handling & Storage:**
+   - Guide on how to store and display AI results in Odoo:
+     - New fields on existing models.
+     - Creating new related records.
+     - Storing raw JSON in a `Text` field for auditing.
+     - Updating Odoo model records based on AI analysis.
+
+7. **Testing & Logging:**
+   - Emphasize testing the API integration thoroughly (mocking external calls in tests).
+   - Advise on using Odoo's `_logger` for debugging API requests and responses.
+
+## Required Input
+- Full details of the external AI API (endpoint, auth, request/response structure).
+- Odoo module name and context for integration.
+- How the integration will be triggered in Odoo.
+
+==================== END: integrate-external-ai-api ====================
+
+==================== START: develop-odoo-ai-module ====================
+# Task: Develop Odoo AI Module
+
+## Goal
+To develop a complete Odoo custom module that incorporates AI functionalities, covering data preparation, AI model interaction, and result presentation.
+
+## Process Steps
+
+1. **Module Scoping & Requirements:**
+   - Refer to the outcome of `tasks#design-odoo-ai-workflow` if it was previously run.
+   - Confirm:
+     - The specific AI-driven feature for the module.
+     - Source Odoo data and target Odoo data for AI results.
+     - User interface requirements for AI interaction and display.
+
+2. **Module Structure & Manifest:**
+   - Guide the creation of the standard Odoo module structure.
+   - Configure `__manifest__.py` including dependencies (e.g., `requests` if using external APIs, or other Odoo modules).
+   - Ensure `security/ir.model.access.csv` is set up for any new models or fields.
+
+3. **Data Preparation & ORM Interaction:**
+   - Guide the development of Python methods (on Odoo models) to:
+     - Fetch relevant data from Odoo (using ORM).
+     - Clean, transform, and format data for the AI model.
+     - Handle data type conversions and edge cases.
+
+4. **AI Interaction Layer:**
+   - Integrate the logic from `tasks#integrate-external-ai-api` or build custom AI model interaction directly if the model is locally hosted.
+   - Create dedicated methods for sending data to AI and receiving responses.
+   - Implement robust error handling and retry mechanisms.
+
+5. **Result Processing & Storage:**
+   - Develop methods to parse AI responses.
+   - Guide how to store AI results back into Odoo (e.g., update fields, create new records, store confidence scores).
+   - Consider auditing AI decisions if necessary.
+
+6. **User Interface (UI) Integration:**
+   - Design and implement Odoo XML views:
+     - To trigger AI processes (buttons, smart buttons).
+     - To display AI-generated insights or predictions (new fields on forms, dedicated analysis views).
+     - Consider using Odoo's web client features for dynamic UI updates.
+
+7. **Background Processing (Optional but Recommended):**
+   - For long-running AI tasks, guide setting up:
+     - **`ir.cron` (Scheduled Actions):** For periodic AI runs (e.g., nightly batch processing).
+     - **Odoo's `queue_job` (Community module) or `_compute_job` (Enterprise):** For asynchronous execution of AI tasks, preventing UI blocking.
+
+8. **Testing & Deployment:**
+   - Guide writing comprehensive Odoo tests for the AI module, including mocks for external AI calls.
+   - Advise on deployment considerations: environment variables, production security.
+   - Refer to `checklists#odoo-ai-deployment-checklist`.
+
+## Required Input
+- The specific AI feature to be implemented.
+- Details of AI service/model to be used.
+- Odoo models, fields, and UI elements involved.
+
+==================== END: develop-odoo-ai-module ====================
+
+==================== START: create-odoo-ai-prompt ====================
+# Task: Create Odoo AI Prompt
+
+## Goal
+To assist the user in crafting effective and context-rich prompts for AI models specifically for Odoo-related tasks.
+
+## Process Steps
+
+1. **Identify AI Goal & Context:**
+   - Ask:
+     - What specific AI model are you prompting (e.g., large language model for text generation, classification model, specific Odoo AI service)?
+     - What is the desired output format and content from the AI?
+     - What Odoo data or context needs to be included in the prompt? (e.g., sales order details, customer notes, product descriptions).
+
+2. **Core Instruction & Role:**
+   - Guide the user to start with a clear, concise instruction for the AI (e.g., "Summarize the customer's support ticket:", "Categorize this Odoo sales lead as Hot, Warm, or Cold:").
+   - Suggest assigning a "role" to the AI if applicable (e.g., "You are an Odoo sales assistant...", "Act as an Odoo inventory manager...").
+
+3. **Odoo Data Injection:**
+   - Advise on how to best inject Odoo data into the prompt:
+     - Use placeholders for dynamic data (e.g., `Customer Name: {customer_name}`, `Product List: {product_list}`).
+     - Specify the format of the injected data (e.g., "The following is a JSON object containing sales order data: {json_data}").
+     - Ensure data privacy and exclude sensitive information unless absolutely necessary.
+
+4. **Constraints & Guidelines:**
+   - Guide adding constraints to the prompt:
+     - Output length (e.g., "Summarize in no more than 3 sentences.").
+     - Tone (e.g., "Use a professional and concise tone.").
+     - Specific keywords or phrases to include/exclude.
+     - Format requirements (e.g., "Output as a JSON object with keys `category` and `reason`.").
+     - Example: "If the lead is 'Hot', explain why based on provided data."
+
+5. **Examples (Few-Shot Prompting):**
+   - Explain the power of providing examples (input-output pairs) in the prompt, especially for classification or specific output formats.
+   - Guide the user in creating relevant Odoo-specific examples.
+
+6. **Iterative Refinement & Testing:**
+   - Emphasize that prompt engineering is iterative.
+   - Suggest testing prompts with different Odoo data inputs and refining based on AI output.
+   - Refer to `templates#odoo-ai-prompt-guideline` for structured thinking.
+
+## Required Input
+- The specific AI task (e.g., summarization, classification, generation).
+- The AI model being used.
+- The Odoo data/context to be included.
+- Desired output format and constraints.
+
+==================== END: create-odoo-ai-prompt ====================
+
+==================== START: gather-odoo-requirements ====================
+# Task: Gather Odoo Requirements
+
+## Goal
+To systematically gather and document functional requirements for an Odoo implementation or custom module.
+
+## Process Steps
+
+1. **Scope Definition:**
+   - Ask the user to define the high-level objective or business area for which requirements are being gathered (e.g., "Improving sales order processing," "Implementing a custom HR module").
+   - Define the boundaries: What's in scope and what's out of scope?
+
+2. **Stakeholder Identification:**
+   - Identify key stakeholders who will use or be affected by the Odoo solution.
+   - Discuss their roles and responsibilities.
+
+3. **Requirement Elicitation Techniques:**
+   - Guide the user through various techniques:
+     - **Interviews:** Prepare questions for interviews with stakeholders.
+     - **Workshops:** Facilitate brainstorming or process mapping workshops.
+     - **Observation:** Suggest observing current business processes.
+     - **Document Analysis:** Review existing documentation (e.g., current process flows, spreadsheets).
+     - **Prototyping/Mockups:** Create simple Odoo UI mockups to gather feedback.
+
+4. **Functional Requirements:**
+   - For each functional area, ask:
+     - "What does the system *do*?"
+     - "What data needs to be captured/managed in Odoo?"
+     - "What business rules apply?"
+     - "What reports or dashboards are needed?"
+     - "What integrations with other systems are required?"
+   - Guide on writing clear, concise, and testable functional requirements (e.g., "The system SHALL...").
+
+5. **Non-Functional Requirements (High-Level):**
+   - Briefly touch upon non-functional aspects relevant to Odoo:
+     - Performance (e.g., "Response time for sales order creation should be under 2 seconds").
+     - Security (e.g., "Only sales managers can approve discounts").
+     - Usability.
+     - Scalability.
+
+6. **Prioritization & Validation:**
+   - Discuss methods for prioritizing requirements (e.g., MoSCoW: Must, Should, Could, Won't).
+   - Advise on validating requirements with stakeholders (e.g., review sessions, sign-off).
+
+7. **Documentation:**
+   - Guide on documenting requirements, potentially using `templates#story-tmpl` if breaking down into user stories, or a dedicated functional specification document.
+   - Refer to `checklists#odoo-requirements-gathering-checklist`.
+
+## Required Input
+- High-level project objective.
+- Identified stakeholders.
+- Information gathered from elicitation techniques (user stories, process flows, data examples).
+
+==================== END: gather-odoo-requirements ====================
+
+==================== START: configure-odoo-module ====================
+# Task: Configure Odoo Module
+
+## Goal
+To guide the user through the configuration of an existing Odoo standard or custom module to meet specific business needs.
+
+## Process Steps
+
+1. **Module Identification & Goal:**
+   - Ask the user:
+     - Which Odoo module needs configuration (e.g., Sales, Purchase, Inventory, a specific custom module)?
+     - What is the specific business goal or problem to be solved by this configuration?
+
+2. **Accessing Configuration Settings:**
+   - Guide the user on how to access module-specific settings in Odoo:
+     - **Settings App:** `Settings -> General Settings` or `Settings -> Users & Companies -> Companies`
+     - **Module-Specific Settings:** `Module Name -> Configuration` or `Module Name -> Settings` (e.g., Sales -> Configuration -> Settings).
+     - **Technical Settings:** `Settings -> Technical` (requires developer mode) for more advanced configurations like Sequences, Automations, Scheduled Actions.
+
+3. **Key Configuration Areas:**
+   - Provide guidance on common configuration areas, depending on the module:
+     - **General Settings:** Activating features (e.g., multi-company, multi-currency).
+     - **Master Data:** Configuring products, customers, vendors, analytical accounts, pricelists.
+     - **Workflows:** Setting up automated actions, email templates, push rules.
+     - **Accounting:** Chart of accounts, journals, taxes, fiscal positions.
+     - **Inventory:** Routes, warehouses, locations, reordering rules.
+     - **Sales/Purchase:** Sales teams, approval rules, payment terms, delivery methods.
+     - **Security:** User groups, access rights, record rules.
+     - **Reporting:** Custom report configurations.
+
+4. **Step-by-Step Configuration:**
+   - For each specific configuration need, provide clear, step-by-step instructions.
+   - Example: "To enable multi-company, go to `Settings -> General Settings`, scroll down to `Companies`, and check the `Multi-Companies` box. Then click `Save`."
+   - Ask for confirmation after each step to ensure correct application.
+
+5. **Testing Configuration:**
+   - Emphasize testing the configured module with actual business scenarios to ensure it behaves as expected.
+   - Guide the user through simple test cases.
+
+6. **Documentation (Optional):**
+   - Suggest documenting the configuration changes for future reference or for other team members.
+
+## Required Input
+- The Odoo module to configure.
+- The specific business goal for the configuration.
+- Details of desired configuration changes (e.g., "I want to set up a new sales team and assign users to it").
+
+==================== END: configure-odoo-module ====================
+
+==================== START: map-business-process-to-odoo ====================
+# Task: Map Business Process to Odoo
+
+## Goal
+To analyze an existing business process and map it to Odoo's standard functionalities, identifying areas for configuration or customization.
+
+## Process Steps
+
+1. **Understand Current Business Process:**
+   - Ask the user to describe the current process in detail, including:
+     - Start and end points.
+     - Key steps and activities.
+     - Involved roles/departments.
+     - Inputs and outputs at each step.
+     - Any pain points or inefficiencies.
+   - Encourage diagramming (e.g., flowchart) if helpful.
+
+2. **Identify Odoo Equivalents:**
+   - For each step in the current process, brainstorm how it could be handled in Odoo's standard modules (e.g., Sales, Purchase, Inventory, Manufacturing, CRM).
+   - Ask: "How would Odoo typically handle this step?"
+   - Example: "If the current process involves manual order entry, Odoo's Sales module has a Sales Order form."
+
+3. **Gap Analysis:**
+   - Compare the current process with Odoo's standard capabilities.
+   - Identify gaps:
+     - **Configuration Gaps:** Can be solved by configuring Odoo's existing features.
+     - **Customization Gaps:** Requires custom development (new models, fields, views, logic).
+     - **Process Change Gaps:** Requires adapting the business process to Odoo's way.
+
+4. **Design Future State Process (Odoo-centric):**
+   - Based on the gap analysis, design the "to-be" process leveraging Odoo:
+     - Outline new steps and activities within Odoo.
+     - Define roles in Odoo.
+     - Show data flow within Odoo.
+   - Emphasize optimizing for Odoo's strengths rather than replicating old processes exactly.
+
+5. **Documentation:**
+   - Guide the user to document the mapped process:
+     - High-level flowcharts (Mermaid syntax encouraged if possible).
+     - Details for each step, noting whether it's standard Odoo, configuration, or customization.
+     - List of identified gaps and proposed solutions.
+   - Refer to `checklists#odoo-requirements-gathering-checklist` for comprehensive documentation.
+
+6. **Validation & Iteration:**
+   - Advise on validating the proposed Odoo-centric process with stakeholders.
+   - Emphasize that this is an iterative process, and adjustments may be needed after initial implementation.
+
+## Required Input
+- Detailed description of the current business process.
+- User's understanding of basic Odoo module functionalities.
+- Identified pain points or areas for improvement.
+
+==================== END: map-business-process-to-odoo ====================
+==================== START: create-odoo-owl-component ====================
+# Task: Create Odoo OWL Component
+
+## Goal
+To guide the user through the creation of a new Odoo OWL (Odoo Web Library) component, including its JavaScript, QWeb template, and integration into an Odoo view or existing component.
+
+## Process Steps
+
+1.  **Component Purpose & Scope:**
+    -   Ask the user:
+        -   What is the specific functionality of this OWL component?
+        -   Where will it be used in Odoo (e.g., custom form view, dashboard, existing widget)?
+        -   What data will it display or interact with?
+        -   What input (props) will it receive and what output (events) will it emit?
+
+2.  **Module Setup & Asset Management:**
+    -   Guide the user to create or identify the Odoo custom module for the component.
+    -   Explain how to register the component's JavaScript and XML files as assets in `__manifest__.py` (e.g., using `assets` bundle `web.assets_backend`, `web.assets_frontend`, or a custom bundle).
+
+3.  **JavaScript Component File (`.js`):**
+    -   Guide the creation of a new JavaScript file (e.g., `static/src/js/components/my_component.js`).
+    -   Provide the basic OWL component structure using `templates#odoo-owl-component-tmpl`.
+    -   Walk through defining:
+        -   `setup()` method for hooks (`useState`, `useRef`, `useService`, `onMounted`, etc.).
+        -   `static template` for linking to QWeb.
+        -   `static props` for defining component inputs.
+        -   Methods for event handling (`onClick`, etc.).
+    -   Guide importing necessary OWL and Odoo services (`Component`, `useService`, etc.).
+    -   Explain how to export the component.
+
+4.  **QWeb Template File (`.xml`):**
+    -   Guide the creation of a new XML file (e.g., `static/src/xml/my_component.xml`).
+    -   Provide a basic QWeb template structure with the component's root template.
+    -   Walk through:
+        -   Using `t-name` for the template.
+        -   Displaying props (`t-esc`, `t-out`).
+        -   Conditional rendering (`t-if`, `t-elif`, `t-else`).
+        -   Looping (`t-foreach`).
+        -   Event binding (`t-on-click`).
+        -   Sub-component rendering (`<t-component>`).
+
+5.  **Integration into Odoo:**
+    -   **For Odoo Web Client:**
+        -   Guide on using the component in a custom `form` view via a `widget` or `field` extension.
+        -   Or, extending an existing Odoo JavaScript file to instantiate and render the component.
+    -   **For Odoo Website:**
+        -   Guide on integrating the component into a website page via a QWeb template rendered by a Python controller.
+    -   **For Odoo PoS:**
+        -   Guide on extending a PoS screen or widget to integrate the component.
+
+6.  **Testing & Debugging Guidance:**
+    -   Suggest using browser developer tools for debugging OWL components.
+    -   Recommend writing basic OWL component tests.
+    -   Refer to `checklists#odoo-owl-dev-checklist` and `tasks#debug-odoo-frontend`.
+
+## Required Input
+-   Component's human-readable purpose/name.
+-   Module technical name.
+-   Where the component will be integrated (Odoo Web, Website, PoS).
+-   Details about component props and events.
+-   Specific UI requirements (if any).
+
+==================== END: create-odoo-owl-component ====================
+
+==================== START: develop-odoo-web-module ====================
+# Task: Develop Odoo Web Module
+
+## Goal
+To guide the user through the development of a custom Odoo Web module, extending or adding functionalities to the Odoo backend client.
+
+## Process Steps
+
+1.  **Module Scope & Requirements:**
+    -   Ask the user:
+        -   What specific functionality needs to be added or extended in the Odoo web client? (e.g., new button, custom widget, overriding existing behavior, custom dashboard).
+        -   Which Odoo model(s) or view(s) are involved?
+        -   What is the desired user interaction?
+
+2.  **Module Setup & Asset Bundle:**
+    -   Guide creating a new Odoo module or using an existing one.
+    -   Explain how to define frontend assets in `__manifest__.py` under `assets` (e.g., `web.assets_backend`, `web.assets_frontend`, `web.assets_qweb`).
+    -   Guide on creating `static/src/js/` and `static/src/xml/` directories.
+
+3.  **JavaScript Module Creation:**
+    -   Provide the basic structure for an Odoo JavaScript module using `templates#odoo-web-js-module-tmpl`.
+    -   Walk through using `odoo.define` or `odoo.owl` for module definition.
+    -   Guide on:
+        -   Extending existing Odoo components (`Widget`, `FormController`, `ListController`, `ActionManager`).
+        -   Registering new custom fields, widgets, or services.
+        -   Making RPC calls to the Odoo backend (`this.env.services.rpc`).
+        -   Handling Odoo events and rendering QWeb templates.
+
+4.  **QWeb Template (`.xml`):**
+    -   Guide on creating QWeb templates for rendering UI elements (`static/src/xml/{module_name}.xml`).
+    -   Explain how to register templates in `__manifest__.py` under `web.assets_qweb`.
+    -   Walk through using `t-name`, `t-if`, `t-foreach`, etc.
+
+5.  **XML View Integration (if applicable):**
+    -   If a custom widget or field is developed, guide on integrating it into an Odoo XML view (form, tree) using `<widget name="my_custom_widget"/>` or `<field name="my_field" widget="my_custom_field"/>`.
+    -   Explain how to inherit existing views using `xpath` to inject custom elements.
+
+6.  **RPC and Backend Interaction:**
+    -   Guide on creating corresponding Python methods in Odoo models (`@api.model`, `@api.multi`, `@api.depends`) that can be called from the frontend via RPC.
+    -   Explain how to pass data between frontend and backend.
+
+7.  **Testing & Debugging:**
+    -   Emphasize using browser developer tools (console, network, debugger) for frontend debugging.
+    -   Refer to `checklists#odoo-web-dev-checklist` and `tasks#debug-odoo-frontend`.
+
+## Required Input
+-   Specific Odoo web client functionality desired.
+-   Involved Odoo models or views.
+-   Desired user interaction.
+-   Module technical name.
+
+==================== END: develop-odoo-web-module ====================
+
+==================== START: customize-odoo-website ====================
+# Task: Customize Odoo Website
+
+## Goal
+To guide the user through customizing their Odoo website, including creating new pages, themes, snippets, and extending controllers.
+
+## Process Steps
+
+1.  **Customization Objective:**
+    -   Ask the user:
+        -   What is the main goal of the website customization? (e.g., New landing page, custom product display, integrated form, new blog layout).
+        -   Which part of the website is being customized (e.g., shop, blog, generic pages)?
+        -   What is the target Odoo module for these changes?
+
+2.  **Website Module Setup:**
+    -   Guide creating a new Odoo module or using an existing one specifically for website customizations.
+    -   Ensure `website` module is a dependency in `__manifest__.py`.
+    -   Explain asset bundle (`web.assets_frontend`, `web.assets_website`) for custom CSS/JS.
+
+3.  **Creating New Website Pages:**
+    -   Guide on defining static web pages using QWeb templates in an XML file (e.g., `views/pages.xml`).
+    -   Provide the basic template structure using `templates#odoo-website-page-tmpl`.
+    -   Walk through linking the page to a menu item if desired.
+
+4.  **Customizing QWeb Templates:**
+    -   Explain how to extend existing Odoo website QWeb templates (e.g., for product pages, blog posts) using `t-extend` and `xpath` in XML files.
+    -   Guide on adding or modifying HTML, Odoo fields, or new snippets.
+
+5.  **Developing Custom Snippets (Drag & Drop Blocks):**
+    -   Guide creating XML files to define new website snippets.
+    -   Walk through:
+        -   Defining the snippet's QWeb template (`<template id="..." name="...">`).
+        -   Defining the snippet's UI (`<div class="o_snippet_container">...</div>`).
+        -   Registering the snippet in the Website Editor (e.g., `views/snippets.xml` and `views/options.xml` for customization options).
+        -   Writing JavaScript for snippet logic or interactivity.
+
+6.  **Extending Python Controllers:**
+    -   Guide on creating a Python file (e.g., `controllers/main.py`) to extend or create new website controllers.
+    -   Walk through using `@http.route`, `request.render`, `request.env`.
+    -   Explain how to:
+        -   Handle URL routes (`/my-custom-page`).
+        -   Fetch data from Odoo backend for rendering.
+        -   Process form submissions (`@http.route(..., methods=['POST'])`).
+
+7.  **Theme Development (High-level):**
+    -   Provide an overview of creating a full Odoo website theme (inheritance, CSS structure, theme options).
+    -   Suggest using Odoo's theme scaffolding tools if available.
+
+8.  **Testing & Debugging:**
+    -   Emphasize clearing browser cache and refreshing Odoo for website changes.
+    -   Guide on using browser developer tools for inspecting HTML, CSS, and JS.
+    -   Refer to `checklists#odoo-website-dev-checklist` and `tasks#debug-odoo-frontend`.
+
+## Required Input
+-   Specific website customization objective.
+-   Target Odoo module.
+-   Details about new pages, snippets, or controller routes needed.
+
+==================== END: customize-odoo-website ====================
+
+==================== START: extend-odoo-pos ====================
+# Task: Extend Odoo Point of Sale
+
+## Goal
+To guide the user through customizing and extending the Odoo Point of Sale (PoS) module for specific business requirements.
+
+## Process Steps
+
+1.  **PoS Customization Objective:**
+    -   Ask the user:
+        -   What specific PoS functionality needs to be added or modified? (e.g., custom button, new payment method, custom product display, integration with external device).
+        -   Which existing PoS component or screen is being targeted for extension?
+        -   What data will it interact with (Odoo models, PoS session data)?
+
+2.  **PoS Module Setup & Assets:**
+    -   Guide creating a new Odoo module or using an existing one, ensuring `point_of_sale` module is a dependency.
+    -   Explain how to register PoS-specific assets (JS, XML) in `__manifest__.py` using the `point_of_sale.assets` bundle.
+    -   Guide on creating `static/src/js/` and `static/src/xml/` directories specifically for PoS.
+
+3.  **JavaScript Extension Strategy:**
+    -   Explain Odoo PoS's architecture (JavaScript models, screens, widgets).
+    -   Guide on extending existing PoS components using `Class.include` or `patch` (for OWL-based PoS).
+    -   Provide basic extension structure using `templates#odoo-pos-extension-tmpl`.
+    -   Walk through:
+        -   Overriding methods (e.g., `_addOrderLine`, `_processOrder`).
+        -   Adding new fields to PoS models (`Order`, `Orderline`, `Product`, `Customer`).
+        -   Creating custom buttons and screens.
+        -   Making RPC calls to the Odoo backend from PoS.
+
+4.  **QWeb Template Integration:**
+    -   Guide on creating or extending PoS QWeb templates in XML files (e.g., `static/src/xml/pos_custom_templates.xml`).
+    -   Explain how to override or inject content into existing PoS templates using `xpath`.
+
+5.  **Python Backend for PoS (if needed):**
+    -   If new data or logic is required on the Odoo server, guide on creating Python models and methods callable via RPC from PoS.
+    -   Explain how to expose necessary data to the PoS frontend via the `load_pos_data` methods or by overriding `_get_pos_ui_product`.
+
+6.  **Data Persistence in PoS:**
+    -   Explain how PoS data is handled (local storage, synchronized with backend).
+    -   Guide on persisting custom data to Odoo models using RPC calls (`self.env['my.model'].create_from_pos(...)`).
+
+7.  **Testing & Debugging PoS:**
+    -   Emphasize using browser developer tools (console, network, application storage) for PoS debugging.
+    -   Highlight the importance of clearing PoS browser cache and restarting the PoS session.
+    -   Refer to `checklists#odoo-pos-dev-checklist` and `tasks#debug-odoo-frontend`.
+
+## Required Input
+-   Specific PoS functionality desired.
+-   Target PoS component/screen.
+-   Module technical name.
+-   Details about new data, buttons, or logic.
+
+==================== END: extend-odoo-pos ====================
+
+==================== START: debug-odoo-frontend ====================
+# Task: Debug Odoo Frontend
+
+## Goal
+To assist the user in effectively debugging issues within Odoo's frontend (web client, website, or Point of Sale), covering JavaScript, OWL, QWeb, and CSS.
+
+## Process Steps
+
+1.  **Problem Description & Context:**
+    -   Ask the user for a detailed description of the issue:
+        -   What is happening?
+        -   What should be happening?
+        -   Exact steps to reproduce the issue.
+        -   Which part of Odoo frontend is affected (Web Client, Website, PoS)?
+        -   Odoo version and browser used.
+        -   Any error messages from browser console or Odoo logs.
+
+2.  **Initial Troubleshooting Steps:**
+    -   "First, please clear your browser cache and cookies, then refresh Odoo (Ctrl+F5 or Cmd+R) to ensure you have the latest assets."
+    -   "Ensure Odoo developer mode is activated."
+    -   "Check your Odoo server logs for any related backend errors that might be causing frontend issues."
+
+3.  **Utilizing Browser Developer Tools (CRITICAL):**
+    -   Guide the user to open browser developer tools (F12 or right-click -> Inspect).
+    -   Walk through relevant tabs:
+        -   **Console:** "Look for red error messages (JavaScript errors), warnings, or custom `console.log` outputs."
+        -   **Sources:** "Navigate to your custom module's JS files. Add breakpoints by clicking on line numbers. Step through code, inspect variables in the Scope panel, and watch expressions."
+        -   **Network:** "Check XHR/Fetch requests to Odoo backend (RPC calls). Look for failed requests, incorrect payloads, or unexpected responses."
+        -   **Elements:** "Inspect the HTML structure and applied CSS. Look for incorrect class names, missing elements, or style conflicts."
+        -   **Application (for PoS):** "Inspect `IndexedDB` or `Local Storage` for PoS specific data to ensure it's consistent."
+        -   **Profiler/Performance:** "For slow UI, use the performance profiler to identify bottlenecks in JavaScript execution."
+
+4.  **Debugging Specific Frontend Technologies:**
+    -   **JavaScript:**
+        -   "Use `debugger;` statement in your JS code to force a breakpoint."
+        -   "Use `console.log()` to output variable values at different stages."
+        -   "For OWL components, inspect the component instance in the browser console if you have `odoo.debug=assets`."
+    -   **QWeb/XML Views:**
+        -   "Check the browser's `Elements` tab to see the final rendered HTML. Compare it against your XML template."
+        -   "Look for syntax errors in your XML files (e.g., unclosed tags, incorrect `xpath` expressions)."
+        -   "Verify asset loading in `__manifest__.py`."
+    -   **CSS:**
+        -   "Use the `Elements` tab to inspect computed styles and see which CSS rules are being applied or overridden."
+        -   "Check for `!important` flags that might be causing issues."
+        -   "Verify your CSS files are loaded in the correct asset bundle."
+
+5.  **Common Odoo Frontend Issues:**
+    -   "Assets not loading: Check `__manifest__.py` asset bundles, file paths, and browser network tab (404 errors)."
+    -   "JavaScript errors: Look at the call stack in the console to pinpoint the source. Could be a typo, incorrect variable access, or an RPC error."
+    -   "XML view inheritance issues: Verify `xpath` expressions, `position` attributes, and `inherit_id`."
+    -   "PoS synchronization problems: Check `pos.session` logs and network requests for data syncing failures."
+
+6.  **Iterative Guidance:**
+    -   Based on the user's findings from each debugging step, suggest the next logical action or potential solution.
+
+## Required Input
+-   Detailed description of the frontend issue.
+-   Steps to reproduce.
+-   Any error messages from browser console or Odoo logs.
+-   Relevant code snippets (JS, XML, Python controller if involved).
+
+==================== END: debug-odoo-frontend ====================
 
 

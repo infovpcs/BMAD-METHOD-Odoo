@@ -1271,5 +1271,702 @@ This Project Brief provides the full context for Mealmate. Please start in 'PRD 
 ### Change Log
 
 ==================== END: story-tmpl ====================
+==================== START: odoo-manifest-tmpl ====================
+# __manifest__.py Template for Odoo 16+
+
+{
+    'name': '{human_readable_module_name}',
+    'summary': '{brief_summary_of_module}',
+    'description': """
+        {Detailed description of the module's functionality,
+        features, and business value.}
+    """,
+    'author': '{Your Name/Company}',
+    'website': '{Your Website, e.g., https://www.yourcompany.com}',
+    'category': '{Module Category, e.g., Sales, Accounting, Tools, Customization}',
+    'version': '16.0.1.0.0',
+    'depends': [{list_of_dependencies}], # e.g., ['base', 'web', 'mail']
+    'data': [
+        'security/ir.model.access.csv',
+        'views/{module_technical_name}_views.xml',
+        # Add other data files here: 'data/some_data.xml', 'wizards/my_wizard_views.xml'
+    ],
+    'demo': [
+        # 'demo/demo_data.xml', # Uncomment and add if you have demo data
+    ],
+    'installable': True,
+    'application': {True/False}, # Set to True if it's a standalone application (e.g., not just an extension)
+    'auto_install': False, # Set to True if it should be installed automatically with dependencies
+    'license': 'LGPL-3', # or OPL-1, AGPL-3, MIT, etc. Choose appropriately.
+}
+==================== END: odoo-manifest-tmpl ====================
+
+==================== START: odoo-model-tmpl ====================
+# Odoo Python Model Template
+
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+# import logging
+# _logger = logging.getLogger(__name__)
+
+class {ClassName}(models.Model):
+    _name = '{module_technical_name}.{model_technical_name}'
+    _description = '{Human Readable Model Name}'
+    _rec_name = '{display_field_name}' # Often 'name' or a computed field for display
+
+    # Basic Fields
+    name = fields.Char(string='Name', required=True, help="A unique name for the record.")
+    description = fields.Text(string='Description', help="Detailed description of the record.")
+    active = fields.Boolean(string='Active', default=True, help="Set to False to hide the record without deleting it.")
+
+    # Example: Many2one relation
+    # partner_id = fields.Many2one('res.partner', string='Related Partner')
+
+    # Example: One2many relation
+    # line_ids = fields.One2many('{module_technical_name}.{related_model}', '{foreign_key_field_name}', string='Lines')
+
+    # Example: Many2many relation
+    # user_ids = fields.Many2many('res.users', string='Assigned Users')
+
+    # Example: Computed field
+    # @api.depends('{field1}', '{field2}')
+    # def _compute_computed_field(self):
+    #     for rec in self:
+    #         rec.computed_field = rec.field1 + rec.field2
+    # computed_field = fields.Char(string='Computed Field', compute='_compute_computed_field', store=True)
+
+    # Example: Onchange method
+    # @api.onchange('{trigger_field}')
+    # def _onchange_trigger_field(self):
+    #     if self.trigger_field:
+    #         self.description = _("Value changed to %s") % self.trigger_field
+
+    # Example: Create/Write/Unlink override
+    # @api.model
+    # def create(self, vals):
+    #     # Add custom logic before create
+    #     res = super({ClassName}, self).create(vals)
+    #     # Add custom logic after create
+    #     return res
+
+    # Example: Action method (callable from button)
+    # def action_do_something(self):
+    #     self.ensure_one() # Ensures method is called on a single record
+    #     _logger.info("Doing something for record: %s", self.name)
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Success',
+    #         'res_model': 'ir.ui.view', # A dummy model for confirmation
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #         'views': [[False, 'form']],
+    #         'res_id': self.env.ref('web.view_web_login').id, # Example of showing a simple view
+    #         'context': {'default_name': 'Operation Successful', 'default_type': 'info'},
+    #     }
+        
+    # Example: SQL Constraint
+    # _sql_constraints = [
+    #     ('name_unique', 'unique (name)', 'The name of the record must be unique!')
+    # ]
+
+    # Example: Python Constraint
+    # @api.constrains('some_field')
+    # def _check_some_field_value(self):
+    #     for rec in self:
+    #         if rec.some_field < 0:
+    #             raise ValidationError(_("The value of 'Some Field' cannot be negative."))
+==================== END: odoo-model-tmpl ====================
+
+==================== START: odoo-view-tmpl ====================
+# Odoo XML View Template
+
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="{module_technical_name}_view_form" model="ir.ui.view">
+            <field name="name">{module_technical_name}.view.form</field>
+            <field name="model">{module_technical_name}.{model_technical_name}</field>
+            <field name="arch" type="xml">
+                <form string="{Human Readable Model Name}">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="active" groups="base.group_no_one"/>
+                            </group>
+                        </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="{module_technical_name}_view_tree" model="ir.ui.view">
+            <field name="name">{module_technical_name}.view.tree</field>
+            <field name="model">{module_technical_name}.{model_technical_name}</field>
+            <field name="arch" type="xml">
+                <tree string="{Human Readable Model Name}">
+                    <field name="name"/>
+                    <field name="active" invisible="1"/>
+                    <field name="create_date" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="{module_technical_name}_view_search" model="ir.ui.view">
+            <field name="name">{module_technical_name}.view.search</field>
+            <field name="model">{module_technical_name}.{model_technical_name}</field>
+            <field name="arch" type="xml">
+                <search string="{Human Readable Model Name}">
+                    <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('description', 'ilike', self)]"/>
+                    <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="{module_technical_name}_action_window" model="ir.actions.act_window">
+            <field name="name">{Human Readable Model Name}</field>
+            <field name="res_model">{module_technical_name}.{model_technical_name}</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first {Human Readable Model Name} record!
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="{module_technical_name}_menu_root"
+                  name="{Top Level Menu Name}"
+                  sequence="10"/> <menuitem id="{module_technical_name}_menu_child"
+                  name="{Child Menu Name}"
+                  parent="{module_technical_name}_menu_root"
+                  sequence="1"/>
+
+        <menuitem id="{module_technical_name}_menu_action"
+                  name="{Action Menu Name}"
+                  parent="{module_technical_name}_menu_child"
+                  action="{module_technical_name}_action_window"
+                  sequence="1"/>
+
+    </data>
+</odoo>
+==================== END: odoo-view-tmpl ====================
+
+==================== START: odoo-security-tmpl ====================
+# Odoo Security Template (ir.model.access.csv)
+
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access__{model_technical_name}_user,{Human Readable Model Name} User,model_{module_technical_name}_{model_technical_name},base.group_user,1,1,1,1
+# Example for a manager group:
+# access__{model_technical_name}_manager,{Human Readable Model Name} Manager,model_{module_technical_name}_{model_technical_name},base.group_system,1,1,1,1
+==================== END: odoo-security-tmpl ====================
+
+==================== START: odoo-ai-integration-spec ====================
+# Odoo AI Integration Specification: {Integration Name}
+
+## 1. Introduction
+
+This document outlines the design and implementation details for integrating AI capabilities into Odoo for the purpose of {briefly state the AI goal}.
+
+## 2. AI Use Case & Objective
+
+- **Business Problem:** {Describe the Odoo business problem this AI integration solves.}
+- **AI Goal:** {Specific, measurable objective for the AI (e.g., "Automatically categorize support tickets with 90% accuracy").}
+- **Odoo Impact:** {How will this AI change or improve Odoo workflows and data?}
+
+## 3. Data Flow & Preparation
+
+- **Odoo Source Data:**
+    - Models: {List Odoo models, e.g., `sale.order`, `crm.lead`}
+    - Fields: {List specific fields to be used, e.g., `name`, `description`, `partner_id.name`}
+    - Data Volume: {Estimated volume, e.g., "1000 records/day"}
+- **External Data (if any):** {Describe external data sources and how they are acquired.}
+- **Data Pre-processing in Odoo:**
+    - {Describe any cleaning, normalization, or transformation steps (e.g., "Extract text from HTML fields," "Tokenize input strings").}
+- **Data Format for AI:** {Specify the format expected by the AI (e.g., "JSON object with keys `text` and `id`").}
+
+## 4. AI Model / Service Details
+
+- **Name/Provider:** {e.g., OpenAI GPT-3.5, Google Natural Language API, Custom ML Model}
+- **Endpoint URL:** {e.g., `https://api.openai.com/v1/chat/completions`}
+- **Authentication Method:** {e.g., API Key in Header, OAuth2 token}
+- **Request Structure:**
+    - Method: {GET/POST}
+    - Headers: {e.g., `Content-Type: application/json`, `Authorization: Bearer <API_KEY>`}
+    - Body Example:
+        ```json
+        {
+            "model": "gpt-3.5-turbo",
+            "messages": [{"role": "user", "content": "Analyze this ticket: {ticket_text}"}]
+        }
+        ```
+- **Response Structure (Expected):**
+    - Example:
+        ```json
+        {
+            "choices": [{"message": {"content": "Category: Technical Support, Priority: High"}}]
+        }
+        ```
+- **Rate Limits / Quotas:** {Note any API limitations.}
+
+## 5. Odoo Integration Points
+
+- **Trigger:** {When does the AI call happen? e.g., "On `crm.lead` creation/update," "Scheduled action daily."}
+- **Odoo Module:** {Name of the Odoo custom module for this integration.}
+- **Python Logic Location:** {e.g., `my_module/models/ai_service.py`}
+- **UI Integration (if any):**
+    - {Describe buttons, fields, or smart buttons that interact with or display AI results.}
+- **Background Processing:** {Is it synchronous, asynchronous (e.g., `queue_job`), or scheduled (`ir.cron`)?}
+
+## 6. Result Handling & Storage in Odoo
+
+- **Target Odoo Models/Fields:**
+    - {Where will AI results be stored? e.g., "New `x_ai_category` char field on `crm.lead`," "Create `ai.analysis.log` records."}
+- **Data Mapping:** {How are AI response fields mapped to Odoo fields?}
+- **Error Handling:** {Describe how API errors, timeouts, or unexpected AI responses are handled (e.g., logging, user notifications, fallback logic).}
+
+## 7. Security Considerations
+
+- **API Key Management:** {How are credentials stored and accessed securely (e.g., `ir.config_parameter`, environment variables)?}
+- **Data Privacy:** {Are any sensitive Odoo data points anonymized or excluded from AI calls?}
+
+## 8. Monitoring & Maintenance
+
+- **Logging:** {What data points will be logged for debugging and auditing?}
+- **Performance Metrics:** {How will the AI integration's performance (latency, success rate) be monitored?}
+- **Retraining/Updating:** {Plan for how the AI model (if custom) will be updated or retrained.}
+
+## 9. Assumptions & Constraints
+
+- {List any assumptions made during design (e.g., "AI service always available").}
+- {List any technical or business constraints.}
+
+==================== END: odoo-ai-integration-spec ====================
+
+==================== START: odoo-ai-prompt-guideline ====================
+# Odoo AI Prompt Engineering Guideline
+
+## 1. Core Principles
+
+- **Clarity & Conciseness:** Be direct. Avoid ambiguity.
+- **Context is King:** Provide enough Odoo-specific context (data, object names, user roles) for the AI to understand the scenario.
+- **Specify Output Format:** Clearly define the desired structure of the AI's response (e.g., JSON, markdown list, simple text).
+- **Iterate & Test:** Prompt engineering is an art; continuous refinement based on AI output is essential.
+
+## 2. Prompt Structure Components
+
+### A. **Role/Persona (Optional but Recommended)**
+- **Purpose:** Guide the AI to adopt a specific perspective or expertise.
+- **Example:**
+    - `You are an Odoo sales assistant.`
+    - `Act as a senior Odoo developer.`
+    - `You are an Odoo inventory manager.`
+
+### B. **Core Instruction**
+- **Purpose:** The main task you want the AI to perform.
+- **Examples:**
+    - `Summarize this customer support ticket from Odoo:`
+    - `Categorize the following Odoo sales lead:`
+    - `Generate a Python function to update an Odoo record's status.`
+    - `Translate this Odoo field description into French:`
+
+### C. **Odoo Data Injection**
+- **Purpose:** Provide the relevant Odoo data for the AI to process.
+- **Guidelines:**
+    - **Identify relevant fields/models:** Don't send unnecessary data.
+    - **Format consistency:** Present Odoo data in a consistent, easily parsable format (e.g., key-value pairs, JSON, bullet points).
+    - **Use placeholders:** `Customer Name: {customer_name}`
+- **Examples:**
+    - `Ticket ID: {ticket_id}`
+    - `Subject: {ticket_subject}`
+    - `Description: """{ticket_description}"""`
+    - `Lead Source: {lead_source}`
+    - `Current Status: {lead_status}`
+    - `Odoo Model: 'res.partner'`
+    - `Odoo Field: 'name'`
+    - `Original Text: {original_text}`
+
+### D. **Constraints & Output Format**
+- **Purpose:** Guide the AI on how to respond.
+- **Examples:**
+    - `Limit the summary to 3 sentences.`
+    - `Response must be only 'Hot', 'Warm', or 'Cold'.`
+    - `Output as a JSON object with keys 'category' and 'priority'.`
+    - `Ensure the Python code adheres to Odoo API conventions (e.g., @api.model, @api.depends).`
+    - `Do not include any greeting or conversational text.`
+    - `Translate only the description, keep field name in English.`
+
+### E. **Examples (Few-Shot Prompting) - Optional**
+- **Purpose:** Demonstrate the desired input-output behavior. Highly effective for specific classification or generation tasks.
+- **Structure:** Provide multiple `Input:` / `Output:` pairs.
+- **Example for Lead Categorization:**
+    ```
+    Input:
+    Lead details:
+    - Company: XYZ Corp
+    - Industry: Tech
+    - Notes: Expressed high interest in enterprise plan during demo. Follow up next week.
+    Output: Hot
+
+    Input:
+    Lead details:
+    - Company: ABC Ltd
+    - Industry: Retail
+    - Notes: Downloaded brochure. No further contact.
+    Output: Warm
+    ```
+
+## 3. Example Full Prompt Construction (for Odoo Support Ticket Categorization)
+You are an Odoo support ticket analyst. Your task is to categorize the following Odoo support ticket into one of these categories: 'Technical Issue', 'Functional Query', 'Feature Request', 'Billing', 'Other'. Provide only the category.
+
+Support Ticket:
+Ticket ID: 12345
+Subject: "Error in creating new sales order line"
+Description: "When I try to add a new product to an existing sales order, I get a 'Validation Error' stating 'Product must have a unit of measure'. This started happening after our latest Odoo update. I checked the product UoM, it seems fine. Odoo Version 18.0."
+
+Category:
+**Expected AI Output:** `Technical Issue`
+
+---
+
+**Remember:** Regularly review and update your prompts as Odoo versions change or AI models evolve.
+==================== END: odoo-ai-prompt-guideline ====================
+
+==================== START: odoo-test-tmpl ====================
+# Odoo Python Test Template
+
+from odoo.tests.common import TransactionCase, Form
+# from odoo.exceptions import ValidationError, UserError
+# import logging
+# _logger = logging.getLogger(__name__)
+
+class Test{TestFeatureName}(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(Test{TestFeatureName}, cls).setUpClass()
+        # Set up common data for all tests in this class
+        # Example: Create a test user
+        # cls.user_test = cls.env['res.users'].create({
+        #     'name': 'Test User',
+        #     'login': 'test_user',
+        #     'email': 'test@example.com',
+        #     'groups_id': [(6, 0, [cls.env.ref('base.group_user').id])],
+        # })
+        # Example: Create a test product
+        # cls.product_test = cls.env['product.product'].create({
+        #     'name': 'Test Product',
+        #     'type': 'product',
+        #     'categ_id': cls.env.ref('product.product_category_all').id,
+        # })
+
+    def setUp(self):
+        super(Test{TestFeatureName}, self).setUp()
+        # Set up data for individual test methods (will be rolled back)
+        # Example: Create a record specifically for this test
+        # self.my_record = self.env['{module_technical_name}.{model_technical_name}'].create({
+        #     'name': 'Test Record 1',
+        # })
+
+    def test_example_method(self):
+        """
+        Test that a specific method behaves as expected.
+        """
+        # self.assertEqual(self.my_record.name, 'Test Record 1', "Name should be 'Test Record 1'")
+        # self.assertTrue(self.my_record.active, "Record should be active by default")
+
+        # Example: Calling a method on a record
+        # self.my_record.action_do_something()
+        # self.assertEqual(self.my_record.status, 'done', "Status should be 'done' after action")
+
+        # Example: Testing a computed field
+        # product = self.env['product.product'].create({'name': 'Test Product 2', 'list_price': 100})
+        # self.assertEqual(product.standard_price, 100, "Standard price should be 100")
+
+        # Example: Testing with a different user
+        # with self.env(user=self.user_test):
+        #     record_as_test_user = self.env['{module_technical_name}.{model_technical_name}'].create({
+        #         'name': 'Record by Test User',
+        #     })
+        #     self.assertEqual(record_as_test_user.create_uid, self.user_test, "Record should be created by test user")
+        
+        # Example: Testing a constraint (expected error)
+        # with self.assertRaises(ValidationError):
+        #     self.env['{module_technical_name}.{model_technical_name}'].create({'name': 'Existing Name'})
+
+        self.assertTrue(True, "Replace this with actual assertions")
+
+    # Add more test methods as needed, each starting with `test_`
+    # def test_another_scenario(self):
+    #     self.assertFalse(False, "Another test")
+
+==================== END: odoo-test-tmpl ====================
+==================== START: odoo-owl-component-tmpl ====================
+# Odoo OWL Component Template (.js file)
+
+/** @odoo-module **/
+
+import { Component, useState, xml } from "@odoo/owl";
+// Import Odoo services or other components as needed
+// import { useService } from "@web/core/utils/hooks";
+// import { SomeOtherComponent } from "./some_other_component";
+
+export class MyCustomComponent extends Component {
+    static template = xml`
+        <div class="o_my_custom_component">
+            <h1 t-esc="props.title"/>
+            <p t-esc="state.message"/>
+            <button t-on-click="onClickButton">Click Me!</button>
+            <t-if="state.showDetails">
+                <p>Details are here: <t-esc="props.details"/></p>
+            </t-if>
+        </div>
+    `;
+
+    // Define props (input attributes from parent)
+    static props = {
+        title: { type: String, optional: true, default: "My Default Title" },
+        details: { type: String, optional: true },
+    };
+
+    setup() {
+        this.state = useState({
+            message: "Hello from OWL Component!",
+            showDetails: false,
+        });
+        // Example: Using an Odoo service
+        // this.orm = useService("orm");
+        // this.notification = useService("notification");
+
+        // Example: Lifecycle hooks
+        // onMounted(() => {
+        //     console.log("MyCustomComponent mounted!");
+        // });
+    }
+
+    onClickButton() {
+        this.state.showDetails = !this.state.showDetails;
+        this.state.message = this.state.showDetails ? "Details are now visible!" : "Hello from OWL Component!";
+        // Example: Emitting a custom event to the parent
+        // this.trigger('my-custom-event', { value: 'data' });
+        // Example: Making an RPC call
+        // this.orm.call("res.partner", "search_read", [[]], { limit: 5 })
+        //     .then(data => this.notification.add(`Fetched ${data.length} partners.`));
+    }
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="my_module.MyCustomComponent">
+        <div class="o_my_custom_component">
+            <h1 t-esc="props.title"/>
+            <p t-esc="state.message"/>
+            <button t-on-click="onClickButton">Click Me!</button>
+            <t-if="state.showDetails">
+                <p>Details are here: <t-esc="props.details"/></p>
+            </t-if>
+        </div>
+    </t>
+</templates>
+==================== END: odoo-owl-component-tmpl ====================
+
+==================== START: odoo-web-js-module-tmpl ====================
+
+Odoo Web JavaScript Module Template
+/** @odoo-module **/
+
+import { registry } from "@web/core/registry";
+// Import any core Odoo services or components you might need
+// import { SomeService } from "@web/core/service_registry";
+// import { FormController } from "@web/views/form/form_controller";
+// import { patch } from "@web/core/utils/patch";
+
+const { Component } = owl; // If you are using OWL components directly in this module
+
+// Example 1: Registering a new widget (for fields)
+// registry.category("fields").add("my_custom_widget", MyCustomWidget);
+
+// Example 2: Registering a new action (for action manager)
+// registry.category("actions").add("my_custom_action_id", MyCustomAction);
+
+// Example 3: Patching an existing component (e.g., FormController)
+// patch(FormController.prototype, "my_module.FormControllerPatch", {
+//     setup() {
+//         this._super();
+//         // Add custom logic here, e.g., to handle a new button click
+//         console.log("FormController patched!");
+//     },
+//     _onMyCustomButtonClick() {
+//         // Handle your custom button click
+//         console.log("Custom button clicked!");
+//         this.env.services.notification.add("Custom button clicked!");
+//     }
+// });
+
+// Example 4: Creating a simple Odoo JavaScript Module
+// This is for code that doesn't necessarily patch or register,
+// but performs some global setup or utility functions.
+// This would typically be loaded in web.assets_backend
+const MyCustomWebModule = {
+start() {
+console.log("My Custom Odoo Web Module Loaded!");
+// Example: Add a click listener to a global element
+// document.addEventListener('click', (ev) => {
+//     if (ev.target.matches('.o_custom_button')) {
+//         console.log("Global custom button clicked!");
+//     }
+// });
+},
+// Any other methods or properties
+};
+
+// If you want this to be a named module (older style or for specific registration)
+// odoo.define('my_module.my_custom_web_module', function (require) {
+//    "use strict";
+//    var Class = require('web.Class');
+//    var MyClass = Class.extend({
+//        init: function () {
+//            console.log("MyClass initialized!");
+//        },
+//    });
+//    return MyClass;
+// });
+
+// For newer Odoo versions with OWL, you generally use the registry for extensions.
+// This direct export might be for simple utility scripts or specific use cases
+// not tied to the registry.
+export default MyCustomWebModule;
+
+==================== END: odoo-web-js-module-tmpl ====================
+
+==================== START: odoo-website-page-tmpl ====================
+# Odoo Website Page Template (.xml file)
+
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="website_page_my_custom_page" name="My Custom Website Page">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block o_colored_level" data-snippet="s_text_block" data-name="Text" style="background-image: none;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 pt24 pb24">
+                                    <h1>Welcome to My Custom Page!</h1>
+                                    <p>This is a custom page created in Odoo Website.</p>
+                                    <p>You can add dynamic content here using Odoo's QWeb templating engine.</p>
+                                    <t t-if="user_name">
+                                        <p>Hello, <span t-esc="user_name"/>!</p>
+                                    </t>
+                                    <p>Current date: <span t-field="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="oe_structure"></div>
+                </div>
+            </t>
+        </template>
+
+        <menuitem id="menu_my_custom_page"
+                  name="Custom Page"
+                  parent="website.main_menu" sequence="100" web_icon="fa fa-star"
+                  t-if="website.menu_id"
+                  t-attf-href="/my-custom-page" /> </data>
+</odoo>
+
+==================== END: odoo-website-page-tmpl ====================
+
+==================== START: odoo-pos-extension-tmpl ====================
+# Odoo Point of Sale (PoS) Extension Template (.js file)
+
+/** @odoo-module **/
+
+import { Order, Orderline } from "@point_of_sale/app/store/models";
+import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
+import { patch } from "@web/core/utils/patch";
+// Import other PoS components or services you want to extend
+// import { CustomButton } from "@point_of_sale/app/components/custom_button/custom_button";
+// import { registry } from "@web/core/registry";
+
+// Example 1: Patching an existing PoS model (e.g., Orderline)
+// This adds a custom field 'x_custom_note' to each order line.
+patch(Orderline.prototype, {
+    setup() {
+        super.setup();
+        this.x_custom_note = this.x_custom_note || ''; // Initialize custom field
+    },
+    // Override export_as_json to include the custom field
+    export_as_json() {
+        const json = super.export_as_json();
+        json.x_custom_note = this.x_custom_note;
+        return json;
+    },
+    // Override init_from_JSON to import the custom field
+    init_from_JSON(json) {
+        super.init_from_JSON(json);
+        this.x_custom_note = json.x_custom_note || '';
+    },
+});
+
+// Example 2: Patching an existing PoS screen (e.g., PaymentScreen)
+// This adds custom logic when a payment is processed.
+patch(PaymentScreen.prototype, {
+    async _finalizeValidation() {
+        // Add your custom logic BEFORE original validation
+        console.log("Custom logic before payment validation!");
+        const order = this.pos.get_order();
+        if (order.x_custom_field_needed && !order.x_custom_value) {
+            this.env.services.notification.add("Please fill in the custom field!", { type: 'danger' });
+            return; // Prevent validation
+        }
+
+        await super._finalizeValidation(...arguments); // Call original method
+
+        // Add your custom logic AFTER original validation
+        console.log("Custom logic after payment validation!");
+        // Example: Make an RPC call to update backend Odoo
+        // await this.env.services.rpc("/web/dataset/call_kw/pos.order/update_pos_custom_data", {
+        //     model: 'pos.order',
+        //     method: 'update_pos_custom_data',
+        //     args: [[order.backendId], { custom_data: 'processed' }],
+        //     kwargs: {},
+        // });
+    },
+});
+
+// Example 3: Creating a new custom button on a screen
+// This requires extending the screen's XML template to add the button
+// And then handling its click event in JS.
+
+// Sample XML for a custom button (to be added in pos_custom_templates.xml)
+/*
+<templates id="template" xml:space="preserve">
+    <t t-extend="PaymentScreen">
+        <xpath expr="//div[hasclass('payment-screen-content')]" position="inside">
+            <div class="button custom-pos-button" t-on-click="onClickCustomButton">
+                <i class="fa fa-magic"/> Custom Action
+            </div>
+        </xpath>
+    </t>
+</templates>
+*/
+// And the corresponding JS patch for the screen:
+// patch(PaymentScreen.prototype, {
+//     onClickCustomButton() {
+//         this.env.services.notification.add("Custom button clicked on Payment Screen!");
+//         // Example: Open a custom popup
+//         // this.showPopup('ErrorPopup', {
+//         //     title: this.env._t("Custom PoS Action"),
+//         //     body: this.env._t("This is a custom action triggered!"),
+//         // });
+//     }
+// });
+==================== END: odoo-pos-extension-tmpl ====================
 
 
