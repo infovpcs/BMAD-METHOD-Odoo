@@ -66,3 +66,13 @@ Located in `bmad-agent/tasks/`, these self-contained instruction sets allow IDE 
 - **Versatility:** Handles specific functions like running checklists, creating stories, sharding documents, indexing libraries, etc.
 
 Think of tasks as specialized mini-agents callable by your main IDE agents.
+
+## Odoo Project Support
+
+This project now supports Odoo 17/18 custom module development. See [Odoo Demo Outputs](../demos/odoo-output-demo-files/index.md) for Odoo-specific templates, architecture, and documentation. For Odoo development, use the Odoo personas and tasks in `bmad-agent/personas/` and `bmad-agent/tasks/`.
+
+- Quickstart: Follow the Odoo module structure and best practices in the demo outputs.
+- Use the Odoo Backend/Frontend Developer personas for role-specific guidance.
+- Validate your work with Odoo checklists and tests.
+
+---

@@ -16,6 +16,73 @@ Orchestrator Uber BMad Agent that does it all - already pre-compiled in the `web
 
 [More Documentation, Explanations, and IDE Specifics](docs/readme.md) available here!
 
+## Odoo-Specific Development & Validation
+
+This project supports Odoo 17/18 module development with AI-driven best practices and validation. Follow these steps to use the BMAD Method for Odoo projects:
+
+### 1. Reference Odoo Best Practices
+- All Odoo-related development should follow the [Odoo Knowledge Base](bmad-agent/data/odoo-kb.md) for module structure, ORM, security, QWeb, and version-specific notes.
+
+### 2. Use BMAD Agent Personas
+- Use the Odoo personas in `bmad-agent/personas/` (backend, frontend, architect, functional consultant) for role-specific guidance.
+- For story creation and validation, use the Scrum Master persona (`sm.ide.md`). For development, use the Developer persona (`dev.ide.md`).
+
+### 3. Follow Task Instructions
+- For any Odoo module, model, or frontend work, follow the step-by-step instructions in `bmad-agent/tasks/` (e.g., `create-odoo-model.md`, `create-qweb-template.md`).
+- Each task file lists "Related Checklists" at the end for validation.
+
+### 4. Validate with Checklists
+- After completing a task, run the checklist validation using the Python runner:
+  ```sh
+  python bmad-agent/checklist_runner.py
+  ```
+- This will check your work against the relevant QA, security, upgrade, and frontend/website/OWL checklists.
+- Edit the last lines of `checklist_runner.py` to specify the task and module you want to validate:
+  ```python
+  task_file = "bmad-agent/tasks/create-odoo-model.md"
+  mapping_file = "bmad-agent/tasks/checklist-mappings.yml"
+  module_name = "your_module_name"
+  run_checklists_for_task(task_file, mapping_file, module_name)
+  ```
+
+### 5. Manual/Automated Testing
+- For Odoo modules, use Odoo's built-in test framework:
+  - Place tests in the `tests/` folder of your module.
+  - Run tests using Odoo's test runner or via command line.
+
+### 6. Documentation & Knowledge Base
+- Update `README.md` in your module and project root as needed.
+- Expand `bmad-agent/data/odoo-kb.md` with new best practices, version notes, or lessons learned.
+
+### 7. Continuous Improvement
+- As you add new tasks, checklists, or templates, keep the mappings and references up to date.
+- Encourage contributors to use the checklist runner and reference the Odoo KB.
+
+---
+
+**Quickstart for New Odoo Project (Terminal):**
+
+1. Clone this repo and enter the directory:
+   ```sh
+   git clone <your-repo-url>
+   cd BMAD-METHOD-Odoo
+   ```
+2. Install Python dependencies:
+   ```sh
+   pip install pyyaml
+   ```
+3. Scaffold your Odoo module using templates in `bmad-agent/templates/`.
+4. Follow the relevant task file in `bmad-agent/tasks/` for step-by-step instructions.
+5. Run the checklist runner to validate your work:
+   ```sh
+   python bmad-agent/checklist_runner.py
+   ```
+6. Review the output and address any issues found.
+7. Run Odoo tests for your module.
+8. Update documentation and the Odoo KB as needed.
+
+For more details, see the Odoo KB and the BMAD agent personas.
+
 ## End Matter
 
 Interested in improving the BMAD Method? See the [contributing guidelines](docs/CONTRIBUTING.md).

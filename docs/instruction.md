@@ -229,3 +229,15 @@ This setup allows for a highly flexible and dynamically configured multi-persona
 ## Tasks
 
 The Tasks can be copied into your project docs/tasks folder, along with the checklists and templates. The tasks are meant to reduce the amount of 1 off IDE agents - you can just drop a task into chat with any agent and it will perform the 1 off task. There will be full workflow + task coming post V3 that will expand on this - but tasks and workflows are a powerful concept that will allow us to build in a lot of capabilities for our agents, without having to bloat their overall programming and context in the IDE - especially useful for tasks that are not used frequently - similar to seldom used ide rules files.
+
+# Odoo Project Setup
+
+To create a new Odoo module:
+1. Scaffold your module using the structure in `/demos/odoo-output-demo-files/project-structure.md`.
+2. Implement models, views, controllers, and security as per Odoo best practices.
+3. Use the Odoo personas and tasks in `bmad-agent/personas/` and `bmad-agent/tasks/` for guidance.
+4. Validate your module with Odoo's test framework and the checklists in `bmad-agent/checklists/`.
+5. Document your module using the templates in `/demos/odoo-output-demo-files/`.
+6. Deploy using Odoo.sh or your preferred CI/CD pipeline.
+
+For more, see the Odoo demo outputs and tech stack documentation.

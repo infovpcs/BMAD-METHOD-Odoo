@@ -39,3 +39,7 @@
   - list numbered list of `bmad-agent/checklists/{checklists}` and allow user to select one
   - execute the selected checklist
 - `*doc-shard` {PRD|Architecture|Other} - execute `bmad-agent/tasks/doc-sharding-task` task
+
+## Odoo-Specific Guidance
+
+- For any Odoo-related story, validation, or checklist, consult the [Odoo Knowledge Base](../data/odoo-kb.md) for best practices, version notes, and validation criteria.

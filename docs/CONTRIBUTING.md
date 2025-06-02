@@ -43,3 +43,11 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 ## License
 
 By contributing to this project, you agree that your contributions will be licensed under the same license as the project.
+
+## Odoo Module Contributions
+
+- Follow Odoo coding guidelines and PEP8.
+- Add/maintain tests in `/tests` using Odoo's test framework.
+- Ensure module manifest and security files are up to date.
+- Reference `/demos/odoo-output-demo-files/` for documentation standards.
+- Document any version-specific logic or compatibility notes.

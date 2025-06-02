@@ -22,7 +22,7 @@ To use custom agent modes - review the docs here: https://docs.cursor.com/chat/c
 - Custom Agents can be created and configured with specific tools, models, and custom prompts
 - Cursor allows creating custom agents through a GUI interface
 
-NOTE from Cursor: "We’re considering adding a .cursor/modes.json file to your project to make it easier to create and share custom modes."
+NOTE from Cursor: "We're considering adding a .cursor/modes.json file to your project to make it easier to create and share custom modes."
 
 ## Windsurf
 
@@ -121,3 +121,18 @@ GitHub Copilot is currently developing its Copilot Extensions system, which will
    - Full agent customization support is under development
 
 _Note: Full custom mode configuration in GitHub Copilot is still in development. Check GitHub's documentation for the latest updates._
+
+# Odoo/Python IDE Setup
+
+For Odoo development, it is recommended to install the following plugins/extensions:
+- Python (official)
+- Odoo Snippets (VSCode)
+- Odoo Development (VSCode)
+- XML Tools
+- Black, Flake8, pylint
+- PostgreSQL
+- YAML/CSV plugins
+
+Configure your IDE to use Black and Flake8 for linting/formatting, and ensure Python 3.10+ is selected.
+
+---

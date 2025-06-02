@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        This is a basic QWeb template. 
+        It can be used for rendering snippets, reports, or standalone views.
+        
+        To register this template, add it to the 'assets' section of your 
+        module's __manifest__.py, typically under 'web.assets_frontend' 
+        or 'web.assets_backend'.
+    -->
+    <template id="my_qweb_template" name="My Generic QWeb Template">
+        <div class="o_my_custom_template">
+            <h1>Hello from QWeb!</h1>
+            <p t-if="some_value">The value is: <span t-esc="some_value"/></p>
+            <p t-else="">No value provided.</p>
+            
+            <t t-if="user_name">
+                <p>Welcome, <span t-out="user_name"/>!</p>
+            </t>
+            
+            <!-- Example of looping over data -->
+            <ul t-if="items">
+                <t t-foreach="items" t-as="item">
+                    <li><span t-esc="item.name"/> - <span t-esc="item.description"/></li>
+                </t>
+            </ul>
+            
+            <!-- Example of calling another template or snippet -->
+            <!-- <t t-call="web.some_other_template"/> -->
+        </div>
+    </template>
+</odoo> 

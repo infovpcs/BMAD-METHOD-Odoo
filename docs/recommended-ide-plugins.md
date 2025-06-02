@@ -17,3 +17,16 @@ These are plugins that I use (mostly as a typescript developer) but not exhausti
 - SQLite
 
 I also use plugins when using GoLang, Python, and C#
+
+# Odoo/Python Development Plugins
+
+Recommended for Odoo 17/18 module development:
+- Python (official)
+- Odoo Snippets (VSCode)
+- Odoo Development (VSCode)
+- XML Tools
+- Black, Flake8, pylint
+- PostgreSQL
+- YAML/CSV plugins
+
+---

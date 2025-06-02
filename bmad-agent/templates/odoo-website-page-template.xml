@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        This QWeb template defines the structure of a custom Odoo website page.
+        It should be rendered by a Python controller (e.g., from odoo-website-page-controller-template.py).
+        
+        To register this template, ensure it's included in the 'data' section of your 
+        module's __manifest__.py (e.g., 'views/my_website_page_template.xml').
+    -->
+    <template id="my_website_page_template" name="My Custom Website Page">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_title pb24 pt24" data-vcss="0001" data-snippet="s_title" data-name="Title">
+                    <div class="container">
+                        <h1 class="s_title_default" t-out="page_title"></h1>
+                    </div>
+                </section>
+                <section class="s_text_block" data-vcss="0001" data-snippet="s_text_block" data-name="Text">
+                    <div class="container">
+                        <p t-out="dynamic_content"></p>
+                    </div>
+                </section>
+                
+                <!-- Example of displaying records passed from the controller -->
+                <section t-if="records">
+                    <div class="container">
+                        <h2>My Records</h2>
+                        <ul>
+                            <li t-foreach="records" t-as="record">
+                                <span t-field="record.name"/> - <span t-field="record.field_2"/>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Example of a simple form -->
+                <section class="s_website_form" data-vcss="0001" data-snippet="s_website_form" data-name="Form">
+                    <div class="container">
+                        <form action="/my_custom_page/submit" method="POST" class="o_mark_as_required" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name:</label>
+                                <input type="text" name="name" id="name" class="form-control" required="required"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" name="email" id="email" class="form-control" required="required"/>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo> 

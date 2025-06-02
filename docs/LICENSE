@@ -1,6 +1,12 @@
 MIT License
 
-Copyright (c) 2025 Brian AKA BMad AKA Bmad Code
+Copyright (c) 2025 VPerfectCS and contributors
+
+This project is a community-driven effort to add value for all Odoo developers. It is developed and maintained by VPerfectCS and the open source community. All contributors agree that their contributions are licensed under the terms of this MIT License.
+
+This license applies to all code, documentation, and Odoo custom modules in this repository.
+
+Odoo is an open source product. This project is not affiliated with or endorsed by Odoo S.A., but is intended to support and enhance the Odoo ecosystem for the benefit of the community.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +25,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Note: Odoo® is a registered trademark of Odoo S.A. This project is not affiliated with or endorsed by Odoo S.A.

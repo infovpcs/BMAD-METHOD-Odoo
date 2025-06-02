@@ -45,3 +45,24 @@ story-dod-checklist:
     - story.md
   default_locations:
     - docs/stories/*.md
+
+odoo-module-qa-checklist:
+  checklist_file: bmad-agent/checklists/odoo-module-qa-checklist.md
+  required_docs:
+    - __manifest__.py
+    - models/
+    - views/
+    - security/ir.model.access.csv
+  default_locations:
+    - 17.0/addons/{module}/
+    - 18.0/addons/{module}/
+
+odoo-security-checklist:
+  checklist_file: bmad-agent/checklists/odoo-security-checklist.md
+  required_docs:
+    - security/ir.model.access.csv
+    - models/
+    - controllers/
+  default_locations:
+    - 17.0/addons/{module}/
+    - 18.0/addons/{module}/

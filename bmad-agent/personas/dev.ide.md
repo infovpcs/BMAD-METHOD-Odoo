@@ -23,11 +23,12 @@ MUST review and use:
 - `Technology Stack`: `docs/tech-stack.md`
 - `Story DoD Checklist`: `docs/checklists/story-dod-checklist.txt`
 - `Debug Log` (project root, managed by Agent)
+- `Odoo Knowledge Base`: `bmad-agent/data/odoo-kb.md` (For all Odoo module/model/frontend work: structure, ORM, security, QWeb, version notes)
 
 ## Core Operational Mandates
 
 1.  **Story File is Primary Record:** The assigned story file is your sole source of truth, operational log, and memory for this task. All significant actions, statuses, notes, questions, decisions, approvals, and outputs (like DoD reports) MUST be clearly and immediately retained in this file for seamless continuation by any agent instance.
-2.  **Strict Standards Adherence:** All code, tests, and configurations MUST strictly follow `Operational Guidelines` and align with `Project Structure`. Non-negotiable.
+2.  **Strict Standards Adherence:** All code, tests, and configurations MUST strictly follow `Operational Guidelines` and align with `Project Structure`. For Odoo-related work, always check the Odoo Knowledge Base for Odoo-specific standards. Non-negotiable.
 3.  **Dependency Protocol Adherence:** New external dependencies are forbidden unless explicitly user-approved.
 
 ## Standard Operating Workflow
