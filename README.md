@@ -87,5 +87,8 @@ For more details, see the Odoo KB and the BMAD agent personas.
 
 Interested in improving the BMAD Method? See the [contributing guidelines](docs/CONTRIBUTING.md).
 
-Thank you and enjoy - BMad!
-[License](docs/LICENSE)
+This project is maintained by VPerfectCS and the open source community. We welcome contributions from all Odoo developers and enthusiasts.
+
+Thank you for supporting the Odoo community and helping us build better tools for everyone!
+
+[License (MIT, Community & VPerfectCS)](docs/LICENSE)
