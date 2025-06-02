@@ -107,24 +107,31 @@ For more details, see the Odoo KB and the BMAD agent personas.
 
 ## Project Scaffolding Script
 
-To quickly set up a new project directory with the necessary BMAD agent structure, you can use the `scaffold_bmad_project.py` script.
+To quickly set up a new project directory with the necessary BMAD agent structure, or update an existing one, you can use the `scaffold_bmad_project.py` script.
 
-**Purpose:** Creates a new project folder and copies the `bmad-agent` directory (containing all personas, tasks, templates, etc.) and an empty `docs` directory into it.
+**Purpose:** Creates a new project folder and copies the `bmad-agent` directory (containing all personas, tasks, templates, etc.) and an empty `docs` directory into it. If the directory already exists and the `--update` flag is used, it will update the `bmad-agent` and `docs` structure within the existing folder.
 
 **Usage:**
 1.  Ensure you have Python 3.6+ installed.
 2.  Run the script from the root directory of the **cloned BMAD-METHOD-Odoo repository** (the one containing the `scaffold_bmad_project.py` file).
-3.  Provide the name for your new project directory as a command-line argument:
+3.  Provide the name for your project directory as a command-line argument.
 
-    ```sh
-    python scaffold_bmad_project.py your-new-project-name
-    ```
-    Replace `your-new-project-name` with the desired name for your project folder.
+    -   **To scaffold a NEW project:**
+        ```sh
+        python scaffold_bmad_project.py your-new-project-name
+        ```
+        Replace `your-new-project-name` with the desired name for your new project folder. This will fail if the directory already exists.
+
+    -   **To UPDATE an EXISTING project structure:**
+        ```sh
+        python scaffold_bmad_project.py your-existing-project-name --update
+        ```
+        Replace `your-existing-project-name` with the name of the project directory you want to update. This will copy/overwrite the `bmad-agent` folder and create the `docs` folder if it doesn't exist.
 
 **What the script does:**
-- Creates a directory with the specified name in the same location as the script.
-- Copies the entire `bmad-agent` folder from the current repository into your new project directory.
-- Creates an empty `docs` folder in your new project directory.
+- Creates a directory with the specified name in the same location as the script **(only if not using --update)**.
+- Copies the entire `bmad-agent` folder from the current repository into your project directory. If the directory exists and `--update` is used, it copies into the existing directory.
+- Creates an empty `docs` folder in your project directory. If the directory exists and `--update` is used, it creates the `docs` folder if it doesn't already exist within the existing directory.
 
 **Next Steps After Scaffolding:**
 1.  **Navigate to your new project directory:**
