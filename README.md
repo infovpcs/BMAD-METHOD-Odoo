@@ -6,13 +6,35 @@ There are lots of docs here, but I HIGHLY suggest you just try the Web Agent - i
 
 ### Web Quickstart Project Setup (Recommended)
 
-Orchestrator Uber BMad Agent that does it all - already pre-compiled in the `web-build-sample` folder.
+The Agent Orchestrator in V3 utilizes a build script to package various agent assets (personas, tasks, templates, etc.) into a structured format, primarily for use with web-based orchestrator agents that can leverage large context windows. This process involves consolidating files from specified source directories into bundled text files and preparing a main agent prompt.
 
-- The contents of [Agent Prompt Sample](web-build-sample/agent-prompt.txt) text get pasted into the Gemini Gem, or ChatPGT customGPT 'Instructions' field.
-- The remaining files in that same folder folder just need to be attached as shown in the screenshot below. Give it a name (such as BMad Agent) and save it, and you now have the BMad Agent available to help you brainstorm, research, plan, execute on your vision, or understand how this all even works!
-- Once its running, start with typing `/help`, and then type option `2` when it presents 3 options to learn about the method!
+You can use either the Node.js or Python version of the build script.
 
-![image info](docs/images/gem-setup.png)
+**Using the Node.js Build Script:**
+1. Ensure you have Node.js installed.
+2. Run the script from the project root:
+   ```sh
+   node build-web-agent.js
+   ```
+
+**Using the Python Build Script:**
+1. Ensure you have Python 3.6+ installed.
+2. Install required Python dependencies (if any - currently none for the script itself, but your config might require `PyYAML` if you use YAML configs):
+   ```sh
+   pip install pyyaml # if needed for config file
+   ```
+3. Run the script from the project root:
+   ```sh
+   python build-web-agent.py
+   ```
+
+Both scripts will read the configuration from `build-web-agent.cfg.js` (for Node.js) or `build-web-agent.cfg.py` (for Python), process files from the asset directory (`bmad-agent/`), and output the bundled assets into the specified build directory (`bmad-agent/build/`). The output will include:
+
+- `agent-prompt.txt`: The main orchestrator prompt.
+- `agent-config.txt`: The agent configuration parsed from `web-bmad-orchestrator-agent.cfg.md`.
+- Bundled `.txt` files for each asset subdirectory (e.g., `personas.txt`, `tasks.txt`).
+
+These files are then ready to be used by the Web Agent (like Google Gems or customGPTs).
 
 [More Documentation, Explanations, and IDE Specifics](docs/readme.md) available here!
 
@@ -82,6 +104,40 @@ This project supports Odoo 17/18 module development with AI-driven best practice
 8. Update documentation and the Odoo KB as needed.
 
 For more details, see the Odoo KB and the BMAD agent personas.
+
+## Project Scaffolding Script
+
+To quickly set up a new project directory with the necessary BMAD agent structure, you can use the `scaffold_bmad_project.py` script.
+
+**Purpose:** Creates a new project folder and copies the `bmad-agent` directory (containing all personas, tasks, templates, etc.) and an empty `docs` directory into it.
+
+**Usage:**
+1.  Ensure you have Python 3.6+ installed.
+2.  Run the script from the root directory of the **cloned BMAD-METHOD-Odoo repository** (the one containing the `scaffold_bmad_project.py` file).
+3.  Provide the name for your new project directory as a command-line argument:
+
+    ```sh
+    python scaffold_bmad_project.py your-new-project-name
+    ```
+    Replace `your-new-project-name` with the desired name for your project folder.
+
+**What the script does:**
+- Creates a directory with the specified name in the same location as the script.
+- Copies the entire `bmad-agent` folder from the current repository into your new project directory.
+- Creates an empty `docs` folder in your new project directory.
+
+**Next Steps After Scaffolding:**
+1.  **Navigate to your new project directory:**
+    ```sh
+    cd your-new-project-name
+    ```
+2.  **Generate Initial Documentation (Web Agent):** Use your configured web-based AI agent (e.g., Google Gems) to generate core project documents like `PRD.md` and `architecture.md` for your new project.
+3.  **Manually Add Docs:** Save the generated `PRD.md` and `architecture.md` files into the `docs` folder within your new project directory.
+4.  **Continue with IDE Agent:** Open your new project folder (`your-new-project-name`) in your IDE. Activate the `ide-bmad-orchestrator.md` agent located at `/bmad-agent/ide-bmad-orchestrator.md` within your new project. The IDE agent will now have access to all BMAD assets and your core documentation to continue the workflow (e.g., creating stories, scaffolding code, running checklists).
+
+This script streamlines the initial setup, allowing you to quickly get a new project ready to leverage the full BMAD workflow.
+
+---
 
 ## End Matter
 
