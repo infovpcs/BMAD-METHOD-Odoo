@@ -81,3 +81,5 @@ Immediate Action Commands:
   - Prefer simple node connections.
 
 </output_formatting>
+
+**Note:** This orchestrator is configured for Odoo 17/18 module development. Odoo-specific personas, tasks, and checklists are available via the config file. For Odoo best practices, see the demo outputs and knowledge base.
